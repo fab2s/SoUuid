@@ -14,9 +14,9 @@ The order problem has been addressed in various ways in PHP, most being implemen
 
 Because to start with, PHP is limited to the micro-second, and RFC implementation have to artificially meet the "official" 100ns interval, which actually weakens the uniqueness of the UUID, as the same RFC random bits are now protecting a ten times wider interval against collisions.
 
-It's of course ok to trade some performance and even some usability to stay in standards, but all together it also seems weird to be stuck with such an inefficient format which in practice cannot even match the level of guarantees against collision provided by the original RFC. Now about using the Gregorian calendar as origin of time, it just brings nothing to the table. Using the Epoch time seems more reasonable and more convenient to work with. Unless you where planning to simulate pre-70's MAC address (did they even exist before that), it's just a waist of data space.
+It's of course ok to trade some performance and even some usability to stay in standards, but all together it also seems weird to be stuck with such an inefficient format that does not even match the level of guarantees defined by the original RFC. Then, using the Gregorian calendar as origin of time just brings nothing to the table. Using the Epoch time seems more reasonable and more convenient to work with. Unless you where planning to simulate pre-70's Mac address (did they even exist before that), it's just a waist of data space.
 
-It may have made more sens at some point to bind UUIDs to some physical Mac Address for eternity, but now that hardware has become a commodity, Mac address are subject to change frequently with no other meaning than "a deployment was done". And MAc address is rather a distant information in PHP. So it seems a bit awkward to have to deal with Mac Address format just to store a worker id. It's also kind of a limitation to be bound to any particular format for something that should belong to the application space like a worker or job id.
+It may have made more sens at some point to bind UUIDs to some physical Mac Address for eternity, but now that hardware has become a commodity, Mac address are subject to change frequently with no other meaning than "a deployment was done". So it seems a bit awkward to have to deal with Mac Address format just to store a worker id, especially with PHP where Mac address is a rather distant information. It's also kind of a limitation to be bound to any particular format for something that should belong to the application space, like a worker or job id.
 
 So all together it felt like there was a room for some simple improvements that hopefully will help out in real life situations.
 
@@ -103,7 +103,7 @@ The proposed implementation aim at being a simple and efficient UUID solution fo
 
 The recipe is pretty basic and is mostly inspired by the original RFC:
 - The current time to the micro second is stored in 56-bit binary format (7 bytes). 7 bytes is one byte bellow the RFC for the 100ns time but it is enough to encode microsecond timestamps until 4253-05-31 22:20:37 (or 2^56 microsecond after unix epoch - 1 µs).
-- Following the RFC spirit, 6 bytes are then reserved for an identifier, similar to the RFC `node` parameter, except this identifier can be any 6 or bellow bytes, not necessarily an hex MAC address'ish string.
+- Following the RFC spirit, 6 bytes are then reserved for an identifier, similar to the RFC `node` parameter, except this identifier can be any 6 or bellow bytes, not necessarily an hex Mac address'ish string.
 - Again like the RFC, some random bytes are finally added, but since we saved one from the time part, both by limiting validity span for the next 2 millenniums and reducing the length to micro seconds, one more random byte can be picked.
 
 The result is a 16 bytes binary string ready to be used as primary key and ordered to the microsecond.
@@ -111,7 +111,7 @@ This means that only the inserts generated within the same micro second may not 
 
 Then, the custom identifier slot is added before the random part because, while we are at it, this can help out a bit when scanning for your custom identifiers on the primary index, as they will be found earlier in the string.
 
-If you do not provide with an identifier, 5 out of the 6 reserved bytes will be randomly picked and left padded with a null byte to remember it was random. If you use less than 6 bytes for the identifier, a null byte is right padded, and the eventual remaining gap is filled with random bytes. So you just have to worry about not using a null byte in you identifiers and to limit them to 6 bytes. For example, `"abc1"` will be encoded as `b"abc1\x00Ü"` (including one extra byte of entropy or 256 more combinations) in the binary uuid string and retrieved as exactly `"abc1"` when decoded.
+If you do not provide with an identifier, 5 out of the 6 reserved bytes will be randomly picked and left padded with a null byte to remember it was random. If you use less than 6 bytes for the identifier, a null byte is right padded, and the eventual remaining gap is filled with random bytes. So you just have to worry about not using a null byte in your identifiers and to limit them to 6 bytes. For example, `"abc1"` will be encoded as `b"abc1\x00Ü"` (including one extra byte of entropy or 256 more combinations) in the binary uuid string and retrieved as exactly `"abc1"` when decoded.
 
 So altogether this means that we are left with one chance out of 2^24 (= 16 777 216) to collide within the same micro second in the WORST and insane case where only one identifier of exactly 6 bytes would be used everywhere. 
 Without any identifier, you add 5 random bytes (one out of 2^40 = 1 099 511 627 776) and reach a total of 8 random bytes (2^64 combinations) to prevent collision within the same micro second, which matches the best PHP RFC implementations.
