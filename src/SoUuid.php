@@ -236,7 +236,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     public function getDateTime()
     {
         if ($this->dateTime === null) {
-            $this->dateTime = new \DateTimeImmutable('@' . round($this->getMicroTime(), 0));
+            $this->dateTime = new \DateTimeImmutable('@' . (int) $this->getMicroTime());
         }
 
         return $this->dateTime;
