@@ -80,7 +80,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
         // using 7 bytes to store micro time is enough up to 4253-05-31 22:20:37
         $uuid = hex2bin(str_pad($time, 14, '0', STR_PAD_LEFT));
 
-        if ($identifier) {
+        if ($identifier !== null) {
             if (strpos($identifier, static::IDENTIFIER_SEPARATOR) !== false) {
                 throw new \InvalidArgumentException('SoUuid identifiers cannot contain ' . bin2hex(static::IDENTIFIER_SEPARATOR));
             }
