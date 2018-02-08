@@ -1,5 +1,7 @@
 # SoUuid : Simple Ordered UUID 
 
+[![Build Status](https://travis-ci.org/fab2s/NodalFlow.svg?branch=master)](https://travis-ci.org/fab2s/NodalFlow)
+
 SoUuid is a working proposal to generate ordered UUIDs is a simple and efficient way in PHP.
 
 While UUID already have [well defined standards](https://tools.ietf.org/html/rfc4122), they suffer from quite bad performance when used a primary index in DBMS. The reason are well know and goes down to :  
@@ -23,7 +25,7 @@ So all together it felt like there was a room for some simple improvements that 
 SoUuid can be installed using composer :
 
 ```
-composer require "fab2s/SoUuid"
+composer require "fab2s/souuid"
 ```
 
 ## In practice 
@@ -72,7 +74,7 @@ array:4 [
 ```
 
 You get binary 16 : 
-> b"\x05d¦NÍÔ¢<b style="color:green">w12345</b>|ê+"
+> b"\x05d¦NÍÔ¢<b>w12345</b>|ê+"
 
 ### Building from Strings
 
