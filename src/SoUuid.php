@@ -65,7 +65,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     }
 
     /**
-     * @param null $identifier
+     * @param string|null $identifier
      *
      * @return SoUuidInterface
      */

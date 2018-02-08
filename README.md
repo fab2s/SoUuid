@@ -1,6 +1,6 @@
 # SoUuid : Simple Ordered UUID 
 
-[![Build Status](https://travis-ci.org/fab2s/NodalFlow.svg?branch=master)](https://travis-ci.org/fab2s/NodalFlow)
+[![Build Status](https://travis-ci.org/fab2s/NodalFlow.svg?branch=master)](https://travis-ci.org/fab2s/NodalFlow) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fab2s/SoUuid/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fab2s/SoUuid/?branch=master) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com) [![License](https://poser.pugx.org/fab2s/nodalflow/license)](https://packagist.org/packages/fab2s/souuid)
 
 SoUuid is a working proposal to generate ordered UUIDs is a simple and efficient way in PHP.
 

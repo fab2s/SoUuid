@@ -15,7 +15,7 @@ namespace fab2s\SoUuid;
 interface SoUuidFactoryInterface
 {
     /**
-     * @param null $identifier
+     * @param string|null $identifier
      *
      * @return SoUuidInterface
      */
