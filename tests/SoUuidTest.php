@@ -96,9 +96,8 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
      *
      * @param SoUuidInterface $uuid
      * @param array           $decoded
-     * @param string|null     $identifier
      */
-    public function testFromBytes(SoUuidInterface $uuid, $decoded, $identifier)
+    public function testFromBytes(SoUuidInterface $uuid, $decoded)
     {
         $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getHex(), $uuid->getHex());
         $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getHex(), $uuid->getHex());
@@ -116,9 +115,8 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
      *
      * @param SoUuidInterface $uuid
      * @param array           $decoded
-     * @param string|null     $identifier
      */
-    public function testFromString(SoUuidInterface $uuid, $decoded, $identifier)
+    public function testFromString(SoUuidInterface $uuid, $decoded)
     {
         $this->assertSame(SoUuid::fromString($uuid->getString())->getHex(), $uuid->getHex());
         $this->assertSame(SoUuid::fromString($uuid->getString())->getHex(), $uuid->getHex());
@@ -136,9 +134,8 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
      *
      * @param SoUuidInterface $uuid
      * @param array           $decoded
-     * @param string|null     $identifier
      */
-    public function testFromHex(SoUuidInterface $uuid, $decoded, $identifier)
+    public function testFromHex(SoUuidInterface $uuid, $decoded)
     {
         $this->assertSame(SoUuid::fromHex($uuid->getHex())->getHex(), $uuid->getHex());
         $this->assertSame(SoUuid::fromHex($uuid->getHex())->getHex(), $uuid->getHex());
