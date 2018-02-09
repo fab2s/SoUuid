@@ -1,10 +1,10 @@
 <?php
 $finder = PhpCsFixer\Finder::create()
     ->files()
-    ->in(__DIR__ . '/src')
-    ->in(__DIR__ . '/tests')
+    ->in(__DIR__)
+    ->exclude('vendor')
+    ->name('bench')
     ->name('*.php');
-
 
 $header = <<<'EOF'
 This file is part of SoUuid.

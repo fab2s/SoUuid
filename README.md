@@ -181,6 +181,65 @@ Besides, you can use `random_bytes(6)` as default identifier if you do not want 
 
 As [random_compat](https://github.com/paragonie/random_compat) is included as polyfill for [random_bytes()](http://php.net/random_bytes), you don't even have to worry about getting good randomness bellow PHP 7.
 
+## Performance
+
+Since the [issue](https://github.com/fab2s/SoUuid/issues/1) was raised, I included a simple benchmark script to compare UUID generation time with [Webpaster/Uuid](https://github.com/webpatser/laravel-uuid) and [Ramsey/Uuid](https://github.com/ramsey/uuid). Note that these libs are both good at doing their job and can be trusted in production environment. Besides, UUID generation time never was the actual performance issue since we are here talking about fractions of a second per 100K UUIDs. And it's rather normal to find out that compared implementation which handles 4 UUID versions and tend to go as deep in RFC as possible are a bit slower. The main point stays the same : the slow part is not the implementation, it's the RFC's lack of order and the way it is used (string vs binary form and ordering, [benchmarks here](https://www.percona.com/blog/2014/12/19/store-uuid-optimized-way/)).
+
+In addition, the comparison is not entirely honest since all implementations do not do exactly the same thing to end up with a comparable UUID string. For example Webpatser/Uuid does pre-compute the string representation right after binary generation, and SoUuid does not. With SoUuid, Hex and String forms are lazy generated. But this does not slow down actual "insert after generate" either, because the binary form is the root from which others are derived, and is the one to use for performances as PK.
+
+Anyway, if you still bother:
+
+```
+$ composer install --dev
+$ php bench
+```
+
+The bench script is untested bellow php 7.
+
+**PHP 7.1.2:**
+
+```
+Benchmarking fab2s/SoUuid vs Ramsey/Uuid vs Webpatser/Uuid
+Iterations: 100 000
+Averaged over: 10
+PHP 7.1.2 (cli) (built: Feb 14 2017 21:24:45) ( NTS MSVC14 (Visual C++ 2015) x64 )
+Copyright (c) 1997-2017 The PHP Group
+Zend Engine v3.1.0, Copyright (c) 1998-2017 Zend Technologies
+Windows NT xxxxx 10.0 build 16299 (Windows 10) AMD64
++----------------+----------+-----------+---------+
+| Generator      | Time (s) | Delta (s) | %       |
++----------------+----------+-----------+---------+
+| fab2s/SoUuid   | 0.4533   |           |         |
+| Webpatser/Uuid | 0.9050   | 0.4517    | 99.63%  |
+| Ramsey/Uuid    | 1.5755   | 1.1221    | 247.52% |
++----------------+----------+-----------+---------+
+
+Time: 29.43 seconds, Memory: 2.00MB
+```
+
+**PHP 7.2.0:**
+
+```
+Benchmarking fab2s/SoUuid vs Ramsey/Uuid vs Webpatser/Uuid
+Iterations: 100 000
+Averaged over: 10
+PHP 7.2.0 (cli) (built: Nov 28 2017 23:48:32) ( NTS MSVC15 (Visual C++ 2017) x64 )
+Copyright (c) 1997-2017 The PHP Group
+Zend Engine v3.2.0, Copyright (c) 1998-2017 Zend Technologies
+Windows NT xxxxx 10.0 build 16299 (Windows 10) AMD64
++----------------+----------+-----------+---------+
+| Generator      | Time (s) | Delta (s) | %       |
++----------------+----------+-----------+---------+
+| fab2s/SoUuid   | 0.3421   |           |         |
+| Webpatser/Uuid | 0.6919   | 0.3498    | 102.26% |
+| Ramsey/Uuid    | 1.3497   | 1.0076    | 294.57% |
++----------------+----------+-----------+---------+
+
+Time: 23.92 seconds, Memory: 4.00MB
+```
+
+It seems like the only interesting fact we can learn from this is that PHP 7.2.0 is faster that PHP 7.1.2 at the cost of more memory usage (7.0.x is very close to 7.1.x for that matter).
+
 ## Requirements
 
 SoUuid is tested against php 5.6, 7.0, 7.1, 7.2 and hhvm, but it may run bellow that (might up to 5.3).
