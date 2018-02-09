@@ -71,15 +71,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
      */
     public static function generate($identifier = null)
     {
-        // get real microsecond precision, as both microtime(1) and array_sum(explode(' ', microtime()))
-        // are limited by php.ini precision
-        $timeParts    = explode(' ', microtime(false));
-        $timeMicroSec = $timeParts[1] . substr($timeParts[0], 2, 6);
-        // convert to 56-bit integer
-        $time = base_convert($timeMicroSec, 10, 16);
-        // using 7 bytes to store micro time is enough up to 4253-05-31 22:20:37
-        $uuid = hex2bin(str_pad($time, 14, '0', STR_PAD_LEFT));
-
+        $uuid = static::microTimeBin();
         if ($identifier !== null) {
             if (strpos($identifier, static::IDENTIFIER_SEPARATOR) !== false) {
                 throw new \InvalidArgumentException('SoUuid identifiers cannot contain ' . bin2hex(static::IDENTIFIER_SEPARATOR));
@@ -240,5 +232,20 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
         }
 
         return $this->dateTime;
+    }
+
+    /**
+     * @return string
+     */
+    public static function microTimeBin()
+    {
+        // get real microsecond precision, as both microtime(1) and array_sum(explode(' ', microtime()))
+        // are limited by php.ini precision
+        $timeParts    = explode(' ', microtime(false));
+        $timeMicroSec = $timeParts[1] . substr($timeParts[0], 2, 6);
+        // convert to 56-bit integer
+        $time = base_convert($timeMicroSec, 10, 16);
+        // using 7 bytes to store micro time is enough up to 4253-05-31 22:20:37
+        return hex2bin(str_pad($time, 14, '0', STR_PAD_LEFT));
     }
 }

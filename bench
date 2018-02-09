@@ -1,0 +1,109 @@
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Formatter\OutputFormatter;
+use Symfony\Component\Console\Helper\Table;
+
+use fab2s\SoUuid\SoUuid;
+use Ramsey\Uuid\Uuid as rUuid;
+use Webpatser\Uuid\Uuid as wUuid;
+
+$output = new ConsoleOutput();
+$output->setFormatter(new OutputFormatter(true));
+
+$iterations  = 100000;
+$averageOver = 10;
+if (!empty($argv[1]) && ($argv[1] === '--help' || $argv[1] === '-h')) {
+    $output->writeln("<info>bench usage</info>
+<comment>no options</comment>  :   run with default iteration (" . number_format($iterations, 0, '.', ' ') . ") and default average rounds (" . number_format($averageOver, 0, '.', ' ') . ")
+<comment>options</comment>     :
+    <fg=cyan>-i=</><fg=magenta>[0-9]</>    Number of iterations. Each test will run this many time
+    <fg=cyan>-a=</><fg=magenta>[0-9]</>    Compute an average over this many test. Each test will execute
+                execute all its iterations this many time.
+");
+    exit;
+}
+
+for ($i = 1; $i <=2; $i++) {
+    if (!empty($argv[$i])) {
+        if (preg_match('`^-i=([0-9]+)$`', $argv[$i], $match)) {
+            $iterations = max(1, (int) $match[1]);
+        } else if (preg_match('`^-a=([0-9]+)$`', $argv[$i], $match)) {
+            $averageOver = max(1, (int) $match[1]);
+        }
+    }
+}
+
+$comparisons = [
+    'SoUuid'        => [
+        'class'     => SoUuid::class,
+        'generate'  => 'generate',
+        'getString' => 'getString',
+    ],
+    'RamseyUuid'    => [
+        'class'     => rUuid::class,
+        'generate'  => 'uuid1',
+        'getString' => '__toString',
+    ],
+    'Webpatseruuid' => [
+        'class'     => wUuid::class,
+        'generate'  => 'generate',
+        'getString' => '__toString',
+    ],
+];
+
+$report = [];
+exec('php -v', $phpVersion);
+$output->writeln("<info>Benchmarking " . implode(' vs ', array_keys($comparisons)) ."</info>");
+$output->writeln('<info>Iterations: ' . number_format($iterations, 0, '.', ' ') . "</info>");
+$output->writeln('<info>Averaged over: ' . number_format($averageOver, 0, '.', ' ') . "</info>");
+$output->writeln('<comment>' . implode(PHP_EOL, $phpVersion) . '</comment>');
+$output->writeln('<comment>' . php_uname() . '</comment>');
+
+$averages = [];
+foreach ($comparisons as $name => $comparison) {
+    $output->writeln("<info>Benchmarking $name</info>");
+    $avgTime = 0;
+    $call    = $comparison['class'] . '::' . $comparison['generate'];
+    for ($i = 0; $i < $averageOver; $i++) {
+        PHP_Timer::start();
+        for ($cnt = 1; $cnt <= $iterations; $cnt++) {
+            call_user_func($call);
+        }
+
+        $avgTime += PHP_Timer::stop();
+    }
+
+    $averages[$name] = $avgTime / $averageOver;
+}
+
+natsort($averages);
+
+$headers          = ['generator' => 'Generator', 'time' => 'Time (s)','diff' => 'Delta (s)', 'pct' => '%'];
+$rowDefaults      = ['generator' => '', 'time' => '','diff' => '', 'pct' => ''];
+$table            = new Table($output);
+$rows             = $rowDefaults;
+$row['generator'] = key($averages);
+$winnerTime       = current($averages);
+$row['time']      = number_format($winnerTime, 4, '.', ' ');
+
+$table->addRow($row);
+unset($averages[$row['generator']]);
+
+foreach ($averages as $name => $time) {
+    $diff = $time - $winnerTime;
+    $pct  = $diff * 100 / $winnerTime;
+    $table->addRow([
+        'generator' => $name,
+        'time' => number_format($time, 4, '.', ' '),
+        'diff' => number_format($diff, 4, '.', ' '),
+        'pct'  => number_format($pct, 2, '.', ' ') . '%',
+    ]);
+
+}
+
+$table->setHeaders($headers)->render();
+$output->writeln('');
+$output->writeln(PHP_Timer::resourceUsage());
