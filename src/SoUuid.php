@@ -71,21 +71,11 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
      */
     public static function generate($identifier = null)
     {
+        // 7 bit micro-time
         $uuid = static::microTimeBin();
-        if ($identifier !== null) {
-            if (strpos($identifier, static::IDENTIFIER_SEPARATOR) !== false) {
-                throw new \InvalidArgumentException('SoUuid identifiers cannot contain ' . bin2hex(static::IDENTIFIER_SEPARATOR));
-            }
-
-            $len        = strlen($identifier);
-            $identifier = substr($identifier, 0, 6) . ($len <= 4 ? static::IDENTIFIER_SEPARATOR . random_bytes(6 - $len - 1) : '');
-        } else {
-            $identifier = static::IDENTIFIER_SEPARATOR . random_bytes(5);
-        }
-
-        $uuid .= str_pad($identifier, 6, static::IDENTIFIER_SEPARATOR, STR_PAD_RIGHT);
-
-        // pick one out of 2^24 = 16 777 216
+        // 6 bytes identifier
+        $uuid .= static::encodeIdentifier($identifier);
+        // 3 random bytes (2^24 = 16 777 216 combinations)
         $uuid .= random_bytes(3);
 
         return new static($uuid);
@@ -198,11 +188,12 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     {
         if ($this->string === null) {
             // microsecond epoch - 2/6 id bytes - 4/6 id bytes - 6/6 id bytes - 3 random bytes
-            $this->string = bin2hex(substr($this->uuid, 0, 7)) . '-' .
-                bin2hex(substr($this->uuid, 7, 2)) . '-' .
-                bin2hex(substr($this->uuid, 9, 2)) . '-' .
-                bin2hex(substr($this->uuid, 11, 2)) . '-' .
-                bin2hex(substr($this->uuid, 13));
+            $hex          = $this->getHex();
+            $this->string = substr($hex, 0, 14) . '-' .
+                substr($hex, 14, 4) . '-' .
+                substr($hex, 18, 4) . '-' .
+                substr($hex, 22, 4) . '-' .
+                substr($hex, 26);
         }
 
         return $this->string;
@@ -214,9 +205,8 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     public function getMicroTime()
     {
         if ($this->microTime === null) {
-            $timeBit         = substr($this->uuid, 0, 7);
-            $timeBit         = hexdec(bin2hex($timeBit));
-            $this->microTime = substr($timeBit, 0, 10) . '.' . substr($timeBit, 10, 6);
+            $timeBin         = substr($this->uuid, 0, 7);
+            $this->microTime = hexdec(bin2hex($timeBin));
         }
 
         return $this->microTime;
@@ -243,9 +233,30 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
         // are limited by php.ini precision
         $timeParts    = explode(' ', microtime(false));
         $timeMicroSec = $timeParts[1] . substr($timeParts[0], 2, 6);
-        // convert to 56-bit integer
+        // convert to 56-bit integer (7 bytes), enough to store micro time is enough up to 4253-05-31 22:20:37
         $time = base_convert($timeMicroSec, 10, 16);
-        // using 7 bytes to store micro time is enough up to 4253-05-31 22:20:37
+        // left pad the eventual gap
         return hex2bin(str_pad($time, 14, '0', STR_PAD_LEFT));
+    }
+
+    /**
+     * @param string|null $identifier
+     *
+     * @return string
+     */
+    public static function encodeIdentifier($identifier = null)
+    {
+        if ($identifier !== null) {
+            if (strpos($identifier, static::IDENTIFIER_SEPARATOR) !== false) {
+                throw new \InvalidArgumentException('SoUuid identifiers cannot contain ' . bin2hex(static::IDENTIFIER_SEPARATOR));
+            }
+
+            $len        = strlen($identifier);
+            $identifier = substr($identifier, 0, 6) . ($len <= 4 ? static::IDENTIFIER_SEPARATOR . random_bytes(5 - $len) : '');
+
+            return str_pad($identifier, 6, static::IDENTIFIER_SEPARATOR, STR_PAD_RIGHT);
+        }
+
+        return static::IDENTIFIER_SEPARATOR . random_bytes(5);
     }
 }
