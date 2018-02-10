@@ -121,13 +121,6 @@ SoUuid has no opinion about the identifier to use, these 6 bytes can be 6 alphan
 hex2bin(base_convert("4294967295", 10, 16)); // b"ÿÿÿÿ"
 ```
 
-or for smaller numbers in the same range :
-
-```php
-// left padd zeros to the base 16 integer representation to fill the resulting 4 bytes space
-hex2bin(str_pad(base_convert("1337", 10, 16), 8, "0", STR_PAD_LEFT)); // "\0\0\x059"
-```
-
 You can even use some of these bytes to add a touch of [nonce](https://en.wikipedia.org/wiki/Cryptographic_nonce). Could just be round robin'd over a decent max int and shared among workers on the same host with [apcu](http://php.net/apcu), or even by specifying loop ranges for each server to use for their workers and so on.
 
 There is plenty of room to implement something that does the job in many particular cases. The identifier details are owned by their generator while still being part of a standard than can be shared and used by every SoUuid generator. It could even make sense to port the recipe to other languages if at least part of your UUIDs are PHP generated. You would just trade a slightly smaller time window for easier identifier control which ultimately is the best guarantee against collisions.
