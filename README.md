@@ -232,7 +232,7 @@ Windows NT xxxxx 10.0 build 16299 (Windows 10) AMD64
 Time: 23.92 seconds, Memory: 4.00MB
 ```
 
-It seems like the only interesting fact we can learn from this is that PHP 7.2.0 is faster that PHP 7.1.2 at the cost of more memory usage (7.0.x is very close to 7.1.x for that matter).
+It seems like the only interesting fact we can learn from this is that PHP 7.2.0 is faster than PHP 7.1.2 at the cost of more memory usage (7.0.x is very close to 7.1.x for that matter).
 
 ## Requirements
 
