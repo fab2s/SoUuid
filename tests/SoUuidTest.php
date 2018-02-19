@@ -88,7 +88,7 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
     public function testDecode(SoUuidInterface $uuid, $decoded, $identifier)
     {
         $this->assertSame((string) $identifier, $uuid->getIdentifier());
-        $this->assertSame($decoded['dateTime'], (int) $uuid->getMicroTime());
+        $this->assertSame($decoded['dateTime'], (int) floor($uuid->getMicroTime() / 1000000));
     }
 
     /**
