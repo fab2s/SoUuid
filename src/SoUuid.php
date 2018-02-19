@@ -55,6 +55,11 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     protected $microTime;
 
     /**
+     * @var string
+     */
+    protected $base62;
+
+    /**
      * SoUuid constructor.
      *
      * @param string $uuid
@@ -92,9 +97,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
             throw new \InvalidArgumentException('Uuid String is not valid');
         }
 
-        $uuidParts = explode('-', $uuidString);
-
-        return new static(implode('', array_map('hex2bin', $uuidParts)));
+        return new static(hex2bin(str_replace('-', '', $uuidString)));
     }
 
     /**
@@ -123,6 +126,22 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
         }
 
         return new static($uuidString);
+    }
+
+    /**
+     * @param string $uuidString
+     *
+     * @return SoUuidInterface
+     */
+    public static function fromBase62($uuidString)
+    {
+        if (!ctype_alnum($uuidString)) {
+            throw new \InvalidArgumentException('Uuid Base62 String must composed of a-zA-z0-9 exclusively');
+        }
+
+        $hex = gmp_strval(gmp_init($uuidString, 62), 16);
+
+        return new static(hex2bin(str_pad($hex, 32, '0', STR_PAD_LEFT)));
     }
 
     /**
@@ -206,7 +225,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     {
         if ($this->microTime === null) {
             $timeBin         = substr($this->uuid, 0, 7);
-            $this->microTime = hexdec(bin2hex($timeBin));
+            $this->microTime = base_convert(bin2hex($timeBin), 16, 10);
         }
 
         return $this->microTime;
@@ -218,10 +237,22 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     public function getDateTime()
     {
         if ($this->dateTime === null) {
-            $this->dateTime = new \DateTimeImmutable('@' . (int) floor($this->getMicroTime() / 1000000));
+            $this->dateTime = new \DateTimeImmutable('@' . substr($this->getMicroTime(), 0, -6));
         }
 
         return $this->dateTime;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBase62()
+    {
+        if ($this->base62 === null) {
+            $this->base62 = gmp_strval(gmp_init(bin2hex($this->uuid), 16), 62);
+        }
+
+        return $this->base62;
     }
 
     /**

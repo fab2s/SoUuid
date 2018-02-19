@@ -41,4 +41,11 @@ interface SoUuidFactoryInterface
      * @return SoUuidInterface
      */
     public static function fromBytes($uuidBytes);
+
+    /**
+     * @param string $uuidString
+     *
+     * @return SoUuidInterface
+     */
+    public static function fromBase62($uuidString);
 }

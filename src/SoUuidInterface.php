@@ -48,4 +48,9 @@ interface SoUuidInterface
      * @return \DateTimeImmutable
      */
     public function getDateTime();
+
+    /**
+     * @return string
+     */
+    public function getBase62();
 }

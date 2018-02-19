@@ -56,6 +56,7 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
         $uuid = SoUuid::generate($identifier);
         $this->assertSame(bin2hex($uuid->getBytes()), $uuid->getHex());
         $this->assertSame(bin2hex($uuid->getBytes()), str_replace('-', '', $uuid->getString()));
+        $this->assertSame(SoUuid::generate($identifier)->getDateTime()->format('Y-m-D H:i:s'), (new \DateTimeImmutable('@' . time()))->format('Y-m-D H:i:s'));
     }
 
     /**
@@ -88,7 +89,7 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
     public function testDecode(SoUuidInterface $uuid, $decoded, $identifier)
     {
         $this->assertSame((string) $identifier, $uuid->getIdentifier());
-        $this->assertSame($decoded['dateTime'], (int) floor($uuid->getMicroTime() / 1000000));
+        $this->assertSame($decoded['dateTime'], (int) substr($uuid->getMicroTime(), 0, -6));
     }
 
     /**
@@ -99,9 +100,10 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
      */
     public function testFromBytes(SoUuidInterface $uuid, $decoded)
     {
-        $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getHex(), $uuid->getHex());
+        $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getHex(), $uuid->getHex());
         $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getString(), $uuid->getString());
+        $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getBase62(), $uuid->getBase62());
 
         $reDecoded = SoUuid::fromBytes($uuid->getBytes())->decode();
         $this->assertInstanceOf('\DateTimeImmutable', $reDecoded['dateTime']);
@@ -118,9 +120,10 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
      */
     public function testFromString(SoUuidInterface $uuid, $decoded)
     {
-        $this->assertSame(SoUuid::fromString($uuid->getString())->getHex(), $uuid->getHex());
+        $this->assertSame(SoUuid::fromString($uuid->getString())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromString($uuid->getString())->getHex(), $uuid->getHex());
         $this->assertSame(SoUuid::fromString($uuid->getString())->getString(), $uuid->getString());
+        $this->assertSame(SoUuid::fromString($uuid->getString())->getBase62(), $uuid->getBase62());
 
         $reDecoded = SoUuid::fromString($uuid->getString())->decode();
         $this->assertInstanceOf('\DateTimeImmutable', $reDecoded['dateTime']);
@@ -137,9 +140,30 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
      */
     public function testFromHex(SoUuidInterface $uuid, $decoded)
     {
-        $this->assertSame(SoUuid::fromHex($uuid->getHex())->getHex(), $uuid->getHex());
+        $this->assertSame(SoUuid::fromHex($uuid->getHex())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromHex($uuid->getHex())->getHex(), $uuid->getHex());
         $this->assertSame(SoUuid::fromHex($uuid->getHex())->getString(), $uuid->getString());
+        $this->assertSame(SoUuid::fromHex($uuid->getHex())->getBase62(), $uuid->getBase62());
+
+        $reDecoded = SoUuid::fromHex($uuid->getHex())->decode();
+        $this->assertInstanceOf('\DateTimeImmutable', $reDecoded['dateTime']);
+        $reDecoded['dateTime'] = $reDecoded['dateTime']->getTimestamp();
+
+        $this->assertSame($reDecoded, $decoded);
+    }
+
+    /**
+     * @dataProvider uuidProvider
+     *
+     * @param SoUuidInterface $uuid
+     * @param array           $decoded
+     */
+    public function testFromBase62(SoUuidInterface $uuid, $decoded)
+    {
+        $this->assertSame(SoUuid::fromBase62($uuid->getBase62())->getBytes(), $uuid->getBytes());
+        $this->assertSame(SoUuid::fromBase62($uuid->getBase62())->getHex(), $uuid->getHex());
+        $this->assertSame(SoUuid::fromBase62($uuid->getBase62())->getString(), $uuid->getString());
+        $this->assertSame(SoUuid::fromBase62($uuid->getBase62())->getBase62(), $uuid->getBase62());
 
         $reDecoded = SoUuid::fromHex($uuid->getHex())->decode();
         $this->assertInstanceOf('\DateTimeImmutable', $reDecoded['dateTime']);
