@@ -95,6 +95,15 @@ array:4 [
 */
 ```
 
+SoUuid also supports a bas62 format based on [gmp](http://php.net/gmp) which can be a handy form to expose to HTTP interfaces and URLs:
+
+```php
+SoUuid::generate()->getBase62(); // ABRxdU5wbCLM7E7QhHS6r
+$uuid = SoUuid::fromBase62('ABRxdU5wbCLM7E7QhHS6r');
+```
+
+Base62 SoUuids are variable length, but if you start generating now, it should take somme time to go over the current size of 21 chars (the exact calculus is left as an exercise to the reader ^^, thanks for contributing with the result though).
+
 ## Behind the scene
 
 SoUuid aims at being a simple and efficient with a high level of protection against collisions.
