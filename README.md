@@ -95,7 +95,9 @@ array:4 [
 */
 ```
 
-SoUuid also supports a bas62 format based on [gmp](http://php.net/gmp) which can be a handy form to expose to HTTP interfaces and URLs:
+### Base62
+
+SoUuid also supports a `base62` format based on [gmp](http://php.net/gmp) which can be a handy form to expose to HTTP interfaces and URLs:
 
 ```php
 SoUuid::generate()->getBase62(); // ABRxdU5wbCLM7E7QhHS6r
