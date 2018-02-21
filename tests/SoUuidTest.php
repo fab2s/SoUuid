@@ -33,11 +33,15 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
         $input    = [];
         $inputHex = [];
 
+        // remove the irrelevant portion of the order test
+        // as within the same micro second, order may change
+        $randTail    = random_bytes(9);
+        $randTailHex = bin2hex($randTail);
         foreach ($this->identifiers as $identifier) {
             for ($i = 0; $i < 100; ++$i) {
                 $uuid       = SoUuid::generate($identifier);
-                $input[]    = $uuid->getBytes();
-                $inputHex[] = $uuid->getHex();
+                $input[]    = substr($uuid->getBytes(), 0, 7) . $randTail;
+                $inputHex[] = substr($uuid->getHex(), 0, 14) . $randTailHex;
                 $this->assertNotEquals(SoUuid::generate($identifier)->getHex(), SoUuid::generate($identifier)->getHex());
                 $this->assertNotEquals(SoUuid::generate($identifier)->getString(), SoUuid::generate($identifier)->getString());
                 $this->assertNotEquals(SoUuid::generate($identifier)->getBytes(), SoUuid::generate($identifier)->getBytes());
