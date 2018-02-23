@@ -104,7 +104,7 @@ SoUuid::generate()->getBase62(); // ABRxdU5wbCLM7E7QhHS6r
 $uuid = SoUuid::fromBase62('ABRxdU5wbCLM7E7QhHS6r');
 ```
 
-Base62 SoUuids are variable length, but if you start generating now, it should take somme time to go over the current size of 21 chars (the exact calculus is left as an exercise to the reader ^^, thanks for contributing with the result though).
+Base62 SoUuids are variable length, but if you start generating now, it should take some time to go over the current size of 21 chars (the exact calculus is left as an exercise to the reader ^^, thanks for contributing with the result though).
 
 ## Behind the scene
 
