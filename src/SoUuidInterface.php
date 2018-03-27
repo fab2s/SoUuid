@@ -53,4 +53,9 @@ interface SoUuidInterface
      * @return string
      */
     public function getBase62();
+
+    /**
+     * @return string
+     */
+    public function getBase36();
 }

@@ -60,6 +60,11 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     protected $base62;
 
     /**
+     * @var string
+     */
+    protected $base36;
+
+    /**
      * SoUuid constructor.
      *
      * @param string $uuid
@@ -140,6 +145,22 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
         }
 
         $hex = gmp_strval(gmp_init($uuidString, 62), 16);
+
+        return new static(hex2bin(str_pad($hex, 32, '0', STR_PAD_LEFT)));
+    }
+
+    /**
+     * @param string $uuidString
+     *
+     * @return SoUuidInterface
+     */
+    public static function fromBase36($uuidString)
+    {
+        if (!ctype_alnum($uuidString)) {
+            throw new \InvalidArgumentException('Uuid Base62 String must composed of a-z0-9 exclusively');
+        }
+
+        $hex = gmp_strval(gmp_init($uuidString, 36), 16);
 
         return new static(hex2bin(str_pad($hex, 32, '0', STR_PAD_LEFT)));
     }
@@ -249,10 +270,25 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     public function getBase62()
     {
         if ($this->base62 === null) {
+            // max SoUuid = max microtime . max rem bits = 2^56 . 2^72 = 72057594037927936 . 4722366482869645213696
+            // max SoUuid = 720575940379279364722366482869645213696 = GUvfO1q6dEMruD35q5aZKi in base 62 (22 chars)
             $this->base62 = gmp_strval(gmp_init(bin2hex($this->uuid), 16), 62);
         }
 
         return $this->base62;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBase36()
+    {
+        if ($this->base36 === null) {
+            // max SoUuid = 720575940379279364722366482869645213696 = w3dfhtoz4u26q89wgfzwnz94w in base 36 (25 chars)
+            $this->base36 = gmp_strval(gmp_init(bin2hex($this->uuid), 16), 36);
+        }
+
+        return $this->base36;
     }
 
     /**

@@ -97,14 +97,43 @@ array:4 [
 
 ### Base62
 
-SoUuid also supports a `base62` format based on [gmp](http://php.net/gmp) which can be a handy form to expose to HTTP interfaces and URLs:
+SoUuid supports a `base62` format based on [gmp](http://php.net/gmp) which can be a handy form to expose to HTTP interfaces and URLs:
 
 ```php
 SoUuid::generate()->getBase62(); // ABRxdU5wbCLM7E7QhHS6r
 $uuid = SoUuid::fromBase62('ABRxdU5wbCLM7E7QhHS6r');
 ```
 
-Base62 SoUuids are variable length, but if you start generating now, it should take some time to go over the current size of 21 chars (the exact calculus is left as an exercise to the reader ^^, thanks for contributing with the result though).
+Base62 SoUuids are variable length to a maximum of 22 chars within SoUuid valid time frame. They are fully ordered to the micro second if you left pad them with **0** up to the max length.
+
+```php
+$orderedBase62Uuid =  str_pad(SoUuid::generate()->getBase62(), 22, '0', STR_PAD_LEFT);
+```
+
+If you start generating now, base62 UUIDs will have a length of 21 chars until the 2398-12-22 05:49:06 (base 62 zzzzzzzzz = 13 537 086 546 263 551 µsec or 13 537 086 546 epoch time). This should leave enough time to think about left padding old UUIDs in case preserving a consistent ordering still matters at that point.
+
+This makes base62 format the second most efficient format for PK after the raw binary form. At the cost of 5 (or 6 if you have plans for year 2400) more characters, you get a more friendly format, ready to be used basically anywhere with no further transformation (url compatible etc) _except_ where case is insensitive. For DBMS, it's easy to make sure the PK field is case sensitive (bin ascii), but you cannot use these in filename on windows systems as the file system is case insensitive and that would open gate to collisions.
+
+In such case, base36 may be a better option.
+
+### Base36
+
+Following the same spirit, SoUuid provides with a `base36` alternative to `base62`, again based on [gmp](http://php.net/gmp). 
+
+```php
+SoUuid::generate()->getBase36(); // bix20qgjqmi9hqxh0y9tao5u
+$uuid = SoUuid::fromBase36('bix20qgjqmi9hqxh0y9tao5u');
+```
+
+At the cost of an increased max length of 25 characters, the format becomes case insensitive. It is still ordered within the whole SoUuid time frame when properly padded :
+
+```php
+$orderedBase62Uuid =  str_pad(SoUuid::generate()->getBase36(), 25, '0', STR_PAD_LEFT);
+```
+
+If you start generating now, base62 UUIDs will have a length of 24 chars until the 2085-11-09 15:34:00 (base 36 zzzzzzzzzz = 3 656 158 440 062 975 µsec or 3 656 158 440 epoch time). This still leaves some time to think about left padding old UUIDs in case preserving a consistent ordering still matters at that point.
+
+All together, this makes base36 format the third in efficiency as PK. You get a friendly ordered format, as portable as the regular UUID formats (case insensitive) at the cost of three more bytes compared to base62 while still preserving 11 bytes compared to the RFC formats.
 
 ## Behind the scene
 
