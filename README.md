@@ -128,7 +128,7 @@ $uuid = SoUuid::fromBase36('bix20qgjqmi9hqxh0y9tao5u');
 At the cost of an increased max length of 25 characters, the format becomes case insensitive. It is still ordered within the whole SoUuid time frame when properly padded :
 
 ```php
-$orderedBase62Uuid =  str_pad(SoUuid::generate()->getBase36(), 25, '0', STR_PAD_LEFT);
+$orderedBase36Uuid =  str_pad(SoUuid::generate()->getBase36(), 25, '0', STR_PAD_LEFT);
 ```
 
 If you start generating now, base62 UUIDs will have a length of 24 chars until the 2085-11-09 15:34:00 (base 36 zzzzzzzzzz = 3 656 158 440 062 975 µsec or 3 656 158 440 epoch time). This still leaves some time to think about left padding old UUIDs in case preserving a consistent ordering still matters at that point.

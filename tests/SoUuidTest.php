@@ -139,6 +139,7 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getHex(), $uuid->getHex());
         $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getString(), $uuid->getString());
         $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getBase62(), $uuid->getBase62());
+        $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getBase36(), $uuid->getBase36());
 
         $reDecoded = SoUuid::fromBytes($uuid->getBytes())->decode();
         $this->assertInstanceOf('\DateTimeImmutable', $reDecoded['dateTime']);
@@ -159,6 +160,7 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(SoUuid::fromString($uuid->getString())->getHex(), $uuid->getHex());
         $this->assertSame(SoUuid::fromString($uuid->getString())->getString(), $uuid->getString());
         $this->assertSame(SoUuid::fromString($uuid->getString())->getBase62(), $uuid->getBase62());
+        $this->assertSame(SoUuid::fromString($uuid->getString())->getBase36(), $uuid->getBase36());
 
         $reDecoded = SoUuid::fromString($uuid->getString())->decode();
         $this->assertInstanceOf('\DateTimeImmutable', $reDecoded['dateTime']);
@@ -179,6 +181,7 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(SoUuid::fromHex($uuid->getHex())->getHex(), $uuid->getHex());
         $this->assertSame(SoUuid::fromHex($uuid->getHex())->getString(), $uuid->getString());
         $this->assertSame(SoUuid::fromHex($uuid->getHex())->getBase62(), $uuid->getBase62());
+        $this->assertSame(SoUuid::fromHex($uuid->getHex())->getBase36(), $uuid->getBase36());
 
         $reDecoded = SoUuid::fromHex($uuid->getHex())->decode();
         $this->assertInstanceOf('\DateTimeImmutable', $reDecoded['dateTime']);
@@ -199,6 +202,7 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(SoUuid::fromBase62($uuid->getBase62())->getHex(), $uuid->getHex());
         $this->assertSame(SoUuid::fromBase62($uuid->getBase62())->getString(), $uuid->getString());
         $this->assertSame(SoUuid::fromBase62($uuid->getBase62())->getBase62(), $uuid->getBase62());
+        $this->assertSame(SoUuid::fromBase62($uuid->getBase62())->getBase36(), $uuid->getBase36());
 
         $reDecoded = SoUuid::fromHex($uuid->getHex())->decode();
         $this->assertInstanceOf('\DateTimeImmutable', $reDecoded['dateTime']);
@@ -219,6 +223,7 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(SoUuid::fromBase36($uuid->getBase36())->getHex(), $uuid->getHex());
         $this->assertSame(SoUuid::fromBase36($uuid->getBase36())->getString(), $uuid->getString());
         $this->assertSame(SoUuid::fromBase36($uuid->getBase36())->getBase62(), $uuid->getBase62());
+        $this->assertSame(SoUuid::fromBase36($uuid->getBase36())->getBase36(), $uuid->getBase36());
 
         $reDecoded = SoUuid::fromHex($uuid->getHex())->decode();
         $this->assertInstanceOf('\DateTimeImmutable', $reDecoded['dateTime']);
