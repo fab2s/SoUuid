@@ -21,6 +21,9 @@
         "webpatser/laravel-uuid": "^3.0|^2.0",
         "ramsey/uuid": "^3.7"
     },
+    "suggest": {
+        "ext-gmp": "To use base62 and base36 formats"
+    },
     "autoload": {
         "classmap": [
             "src"
