@@ -41,7 +41,7 @@ $uuid->getString(); // "0564a6553c9fbe-003a-46b0-28db-456107"
 $uuid->decode(); // lazy generated array representation
 /*
 array:4 [
-  "microTme" => "1518040440.938430"
+  "microTime" => "1518040440.938430"
   "dateTime" => DateTimeImmutable @1518040441 {#14
     date: 2018-02-07 21:54:01.0 +00:00
   }
@@ -61,7 +61,7 @@ $uuid->getIdentifier(); // "w12345"
 $uuid->decode();
 /*
 array:4 [
-  "microTme" => "1518040333.014178"
+  "microTime" => "1518040333.014178"
   "dateTime" => DateTimeImmutable @1518040333 {#14
     date: 2018-02-07 21:52:13.0 +00:00
   }
@@ -85,7 +85,7 @@ $uuid = SoUuid::fromBytes(b"\x05d¦NÍÔ¢w12345|ê+");
 $uuid->decode();
 /*
 array:4 [
-  "microTme" => "1518040333.014178"
+  "microTime" => "1518040333.014178"
   "dateTime" => DateTimeImmutable @1518040333 {#14
     date: 2018-02-07 21:52:13.0 +00:00
   }

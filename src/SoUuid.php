@@ -173,7 +173,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
         if ($this->decoded === null) {
             $idLen         = strlen($this->getIdentifier());
             $this->decoded = [
-                'microTme'   => $this->getMicroTime(),
+                'microTime'  => $this->getMicroTime(),
                 'dateTime'   => $this->getDateTime(),
                 'identifier' => $this->getIdentifier(),
                 'rand'       => bin2hex(substr($this->uuid, $idLen ? 7 + $idLen : 8)),
