@@ -4,8 +4,8 @@
 
 SoUuid is a working proposal to generate ordered UUIDs in a simple and efficient way using PHP. 
 
-While UUID already have [well defined standards](https://tools.ietf.org/html/rfc4122), they suffer from quite bad performance when used a primary index in DBMS. The reason are well know and goes down to :  
-- UUID are 36 characters long, and this can grow the index size significantly, especially with InnoDB and alike where every secondary index would also contain the primary key.
+While UUIDs already have [well defined standards](https://tools.ietf.org/html/rfc4122), they suffer from quite bad performance when used as a primary key in DBMS. The reason are well know and goes down to :  
+- UUID are 36 characters long, which can grow the index size significantly, especially with InnoDB and alike where every secondary index would also contain the primary key.
 - Insert comes at a terrible cost since UUID PKs are pretty random thus highly scattered across the index.
 
 You can find more information and benchmarks in [Percona Database Performance Blog](https://www.percona.com/blog/2014/12/19/store-uuid-optimized-way/) or [on MariaDb's KB](https://mariadb.com/kb/en/library/guiduuid-performance/). Both includes solutions to handle the matter at the database level. While they focus on Mysql, the problem is similar with other DBMS : lack of UUID order and UUID size are costly, with ordering being critical for massive inserts on a PK.
@@ -14,7 +14,7 @@ The order problem has been addressed in various ways in PHP, most being implemen
 
 It's of course ok to trade some performance and even some usability to stay in standards, but all together it also seems weird to be stuck with such an inefficient format that does not even match the level of guarantees defined by the original RFC. Then, using the Gregorian calendar as origin of time just brings nothing to the table. Using the Epoch time seems more reasonable and more convenient to work with. Unless you where planning to simulate pre-70's Mac address (did they even exist before that), it's just a waist of data space.
 
-It may have made more sens at some point to bind UUIDs to some physical Mac Address for eternity, but now that hardware has become a commodity, Mac address are subject to change frequently with no other meaning than "a deployment was made". So it seems a bit awkward to have to deal with Mac Address format just to store a worker id, especially with PHP where Mac address is a rather distant information. It's also kind of a limitation to be bound to any particular format for something that should belong to the application space, like a worker or job id.
+While it may have made more sens at some point to bind UUIDs to some physical Mac Address for eternity, it is quite less obvious now as hardware has become a commodity and that Mac addresses are subject to change frequently with no other meaning than "a deployment was made". So it seems a bit awkward to have to deal with Mac Address format just to store a more meaningful id, especially with PHP where Mac address is a rather distant information. It's also kind of a limitation to be bound to any particular format for something that should belong to the application space, like a worker or job id.
 
 So all together it felt like there was a room for some simple improvements that hopefully will help out in real life situations.
 
@@ -112,9 +112,9 @@ $orderedBase62Uuid =  str_pad(SoUuid::generate()->getBase62(), 22, '0', STR_PAD_
 
 If you start generating now, base62 UUIDs will have a length of 21 chars until the 2398-12-22 05:49:06 (base 62 zzzzzzzzz = 13 537 086 546 263 551 µsec or 13 537 086 546 epoch time). This should leave enough time to think about left padding old UUIDs in case preserving a consistent ordering still matters at that point.
 
-This makes base62 format the second most efficient format for PK after the raw binary form. At the cost of 5 (or 6 if you have plans for year 2400) more characters, you get a more friendly format, ready to be used basically anywhere with no further transformation (url compatible etc) _except_ where case is insensitive. For DBMS, it's easy to make sure the PK field is case sensitive (bin ascii), but you cannot use these in filename on windows systems as the file system is case insensitive and that would open gate to collisions.
+This makes base62 format the second most efficient format for PK after the raw binary form. At the cost of 5 (or 6 if you have plans for year 2400) more characters, you get a more friendly format, ready to be used basically anywhere with no further transformation (url compatible etc) _except_ where case is insensitive. For DBMS, it's easy to make sure the PK field is case sensitive (binary or ascii_bin), but you cannot use these in filename on windows systems as the file system is case insensitive and that would open a gate to collisions.
 
-In such case, base36 may be a better option.
+In such case, base36 format may be a better option.
 
 ### Base36
 
@@ -140,18 +140,18 @@ All together, this makes base36 format the third in efficiency as PK. You get a 
 SoUuid aims at being a simple and efficient with a high level of protection against collisions.
 
 The recipe is pretty basic and is mostly inspired by the original RFC:
-- The current time to the micro second is stored in 56-bit binary format (7 bytes). 7 bytes is one byte bellow the RFC for the 100ns time but it is enough to encode microsecond timestamps until 4253-05-31 22:20:37 (or 2^56 microsecond after unix epoch - 1 µs).
+- The current time to the micro second is stored in 56-bit binary format (7 bytes). 7 bytes is one byte bellow the RFC for the 100ns Gregorian time, but it is enough to encode microsecond timestamps until **4253-05-31 22:20:37** (or 2^56 microsecond after unix epoch - 1 µs).
 - Following the RFC spirit, 6 bytes are then reserved for an identifier, similar to the RFC `node` parameter, except this identifier can be any 6 or bellow bytes, not necessarily an hex Mac address'ish string.
-- Again like the RFC, some random bytes are finally added, but since we saved one from the time part, both by limiting validity span for the next 2 millenniums and reducing the length to micro seconds, one more random byte can be picked.
+- Again like the RFC, some random bytes are finally added, but since we saved one from the time part, both by limiting validity span for the next 2 millenniums and reducing the precision to micro seconds, one more random byte can be picked.
 
 The result is a 16 bytes binary string ready to be used as primary key and ordered to the microsecond.
-This means that only the inserts generated within the same micro second may not be directly happened to the primary index. If this should happen, it would still be better to insert a row near the top of the index rather that in the middle or worst. 
+This means that only the inserts generated within the same micro second may not be directly happened to the primary index. If this should happen, it should still be better to insert a row near the top of the index rather that in the middle or worst. 
 
 Then, the custom identifier slot is added before the random part because, while we are at it, this can help out a bit when scanning for your custom identifiers on the primary index, as they will be found earlier in the string.
 
 If you do not provide with an identifier, 5 out of the 6 reserved bytes will be randomly picked and left padded with a null byte to remember it was random. If you use less than 6 bytes for the identifier, a null byte is right padded, and the eventual remaining gap is filled with random bytes. So you just have to worry about not using a null byte in your identifiers and to limit them to 6 bytes. For example, `"abc1"` will be encoded as `b"abc1\x00Ü"` (including one extra byte of entropy or 256 more combinations) in the binary uuid string and retrieved as exactly `"abc1"` when decoded.
 
-So altogether this means that we are left with one chance out of 2^24 (= 16 777 216) to collide within the same micro second in the WORST and insane case where only one identifier of exactly 6 bytes would be used everywhere. 
+So altogether this means that we are left with one chance out of 2^24 (= 16 777 216) to collide within the same micro second in the WORST and _insane_ case where only one identifier of exactly 6 bytes would be used everywhere. 
 Without any identifier, you add 5 random bytes and reach a total of 8 random bytes (2^64 combinations) to prevent collision within the same micro second, and this matches the best PHP RFC implementations.
 Of course, using meaningful and efficient identifiers such as a worker ids can reduce the chances to collide down to none. Just like with other RFC implementations, you still have to manually set the identifier, which otherwise defaults to a random string.
 
@@ -168,7 +168,7 @@ There is plenty of room to implement something that does the job in many particu
 ## Why waist one entire null byte ?
 
 Well, as you may have noticed, a null byte (`\0`) is used to distinguish random identifier from user defined identifier. It's pretty clear that some _headache_ could be invested into using fewer space for that purpose. 
-But, at the very least and with no identifier, SoUuid still uses 8 bytes of entropy to protect each microseconds, and this _at least_ matches the best _theoretical_ level of guarantees obtained with existing PHP implementations of the RFC.
+But, at the very least and with no identifier, SoUuid still uses 8 bytes of entropy to protect each microseconds, and this _at least_ matches the best _theoretical_ level obtained with existing PHP implementations of the RFC.
 
 I say _theoretical_ because this implies that these implementations actually gather microseconds, which does not seems so obvious when you look at the details.
 
@@ -208,7 +208,7 @@ $timeParts = explode(' ', microtime(false));
 $timeMicroSec = $timeParts[1] . substr($timeParts[0], 2, 6); // 1517993957306938
 ```
 
-So my current thinking is that, in addition to not being such a XOR myself, this is probably still a good initial stand, because in situations where huge amounts of UUIDs are to be generated, you would need to use identifiers anyway, which was already made easier. And This room could later be used to extend and version the `SoUuid` format (please be my `1337` ^^).
+So my current thinking is that, in addition to not being such a XOR myself, this is probably a good initial stand. Because in situations where huge amounts of UUIDs are to be generated, you need to properly use identifiers anyway, and this was already made easier. This room could also be used later to extend and version the `SoUuid` format (please be my `1337` ^^).
 
 Ultimately, you can use `random_bytes(6)` as default identifier if you do not want to generate identifiers and still want to get the whole 9 bytes of entropy protecting each micro second and lower the collision probability to the pretty insane value of one out of 2^72 = 4 722 366 482 869 645 213 696 for UUIDs generated within the same micro-second.
 
@@ -219,7 +219,7 @@ As [random_compat](https://github.com/paragonie/random_compat) is included as po
 Since the [issue](https://github.com/fab2s/SoUuid/issues/1) was raised, I included a simple benchmark script to compare UUID generation time with [Webpaster/Uuid](https://github.com/webpatser/laravel-uuid) and [Ramsey/Uuid](https://github.com/ramsey/uuid). 
 Note that these libs are both good at doing their job and can be trusted in production environment. Besides, UUID generation time never was the actual performance issue since we are here talking about fractions of a second per 100K UUIDs where the scattered insert could end up costing hours in practice. It's also rather normal to find out that compared implementations, which handles 4 UUID versions and tend to go as deep in RFC as possible, are a bit slower. The main point stays the same : the slow part is not the implementation, it's the RFC's lack of order and the way it is used (string vs binary form and ordering, [benchmarks here](https://www.percona.com/blog/2014/12/19/store-uuid-optimized-way/)).
 
-In addition, the comparison is not entirely honest since all implementations do not do exactly the same thing to end up with a comparable UUID string. For example Webpatser/Uuid does pre-compute the string representation right after binary generation, and SoUuid does not. With SoUuid, Hex and String forms are lazy generated. But this does not slow down actual "insert after generate" either, because the binary form is the root from which other forms are derived, and it is the one to use for best performances as PK.
+In addition, the comparison is not entirely honest since all implementations do not do exactly the same thing to end up with a comparable UUID string. For example `Webpatser/Uuid` does pre-compute the string representation right after binary generation, and SoUuid does not. With SoUuid, Hex and String forms are lazy generated. But this does not slow down actual "insert after generate" either, because the binary form is the root from which other forms are derived, and it is the one to use for best performances as PK.
 
 Anyway, if you still bother:
 
