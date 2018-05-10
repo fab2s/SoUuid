@@ -157,7 +157,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     public static function fromBase36($uuidString)
     {
         if (!ctype_alnum($uuidString)) {
-            throw new \InvalidArgumentException('Uuid Base62 String must composed of a-z0-9 exclusively');
+            throw new \InvalidArgumentException('Uuid Base36 String must composed of a-z0-9 exclusively');
         }
 
         $hex = gmp_strval(gmp_init($uuidString, 36), 16);
