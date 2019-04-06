@@ -276,7 +276,7 @@ It seems like the only interesting fact we can learn from this is that PHP 7.2.0
 
 ## Requirements
 
-SoUuid is tested against php 5.6, 7.0, 7.1, 7.2 and hhvm.
+SoUuid is tested against php 5.6, 7.0, 7.1, 7.2 and 7.3.
 
 ## Contributing
 
