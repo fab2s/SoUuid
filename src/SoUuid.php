@@ -77,6 +77,8 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     /**
      * @param string|null $identifier
      *
+     * @throws \Exception
+     *
      * @return SoUuidInterface
      */
     public static function generate($identifier = null)
@@ -94,6 +96,8 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     /**
      * @param string $uuidString
      *
+     * @throws \InvalidArgumentException
+     *
      * @return SoUuidInterface
      */
     public static function fromString($uuidString)
@@ -107,6 +111,8 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
 
     /**
      * @param string $uuidString
+     *
+     * @throws \InvalidArgumentException
      *
      * @return SoUuidInterface
      */
@@ -122,6 +128,8 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     /**
      * @param string $uuidString
      *
+     * @throws \InvalidArgumentException
+     *
      * @return SoUuidInterface
      */
     public static function fromBytes($uuidString)
@@ -135,6 +143,8 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
 
     /**
      * @param string $uuidString
+     *
+     * @throws \InvalidArgumentException
      *
      * @return SoUuidInterface
      */
@@ -152,6 +162,8 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     /**
      * @param string $uuidString
      *
+     * @throws \InvalidArgumentException
+     *
      * @return SoUuidInterface
      */
     public static function fromBase36($uuidString)
@@ -166,6 +178,8 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     }
 
     /**
+     * @throws \Exception
+     *
      * @return array
      */
     public function decode()
@@ -253,6 +267,8 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     }
 
     /**
+     * @throws \Exception
+     *
      * @return \DateTimeImmutable
      */
     public function getDateTime()
@@ -308,6 +324,9 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
 
     /**
      * @param string|null $identifier
+     *
+     * @throws \Exception
+     * @throws \InvalidArgumentException
      *
      * @return string
      */

@@ -231,4 +231,17 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame($reDecoded, $decoded);
     }
+
+    /**
+     * @dataProvider encodeIdentifierProvider
+     *
+     * @throws \Exception
+     */
+    public function testEncodeIdentifier()
+    {
+        $this->assertSame(6, strlen(SoUuid::encodeIdentifier()));
+        for ($i=0; $i < 10; ++$i) {
+            $this->assertSame(6, strlen(SoUuid::encodeIdentifier(str_repeat('#', $i))));
+        }
+    }
 }

@@ -6,7 +6,11 @@
         "name" : "Fabrice de Stefanis"
     }],
     "keywords" : [
-        "Simple Ordered Uuid PHP"
+        "Simple",
+        "Ordered",
+        "Uuid",
+        "PHP",
+        "SoUuid"
     ],
     "license" : [
         "MIT"
@@ -22,7 +26,8 @@
         "ramsey/uuid": "^3.7"
     },
     "suggest": {
-        "ext-gmp": "To use base62 and base36 formats"
+        "ext-gmp": "To use base62 and base36 formats",
+        "ext-ctype": "To use base62 and base36 formats"
     },
     "autoload": {
         "classmap": [
