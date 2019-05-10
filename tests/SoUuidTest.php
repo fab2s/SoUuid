@@ -233,8 +233,6 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @dataProvider encodeIdentifierProvider
-     *
      * @throws \Exception
      */
     public function testEncodeIdentifier()
