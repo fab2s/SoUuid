@@ -2,7 +2,7 @@
 
 /*
  * This file is part of SoUuid.
- *     (c) Fabrice de Stefanis / https://github.com/fab2s/NodalFlow
+ *     (c) Fabrice de Stefanis / https://github.com/fab2s/SoUuid
  * This source file is licensed under the MIT license which you will
  * find in the LICENSE file or at https://opensource.org/licenses/MIT
  */
@@ -17,45 +17,45 @@ interface SoUuidInterface
     /**
      * @return array
      */
-    public function decode();
+    public function decode(): array;
 
     /**
      * @return string
      */
-    public function getBytes();
+    public function getBytes(): string;
 
     /**
      * @return string
      */
-    public function getHex();
+    public function getHex(): string;
 
     /**
      * @return string
      */
-    public function getIdentifier();
+    public function getIdentifier(): string;
 
     /**
      * @return string
      */
-    public function getString();
+    public function getString(): string;
 
     /**
      * @return string
      */
-    public function getMicroTime();
+    public function getMicroTime(): string;
 
     /**
      * @return \DateTimeImmutable
      */
-    public function getDateTime();
+    public function getDateTime(): \DateTimeImmutable;
 
     /**
      * @return string
      */
-    public function getBase62();
+    public function getBase62(): string;
 
     /**
      * @return string
      */
-    public function getBase36();
+    public function getBase36(): string;
 }

@@ -2,7 +2,7 @@
 
 /*
  * This file is part of SoUuid.
- *     (c) Fabrice de Stefanis / https://github.com/fab2s/NodalFlow
+ *     (c) Fabrice de Stefanis / https://github.com/fab2s/SoUuid
  * This source file is licensed under the MIT license which you will
  * find in the LICENSE file or at https://opensource.org/licenses/MIT
  */
@@ -11,6 +11,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use fab2s\SoUuid\SoUuid;
 use Ramsey\Uuid\Uuid as rUuid;
+use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -73,12 +74,12 @@ foreach ($comparisons as $name => $comparison) {
     $avgTime = 0;
     $call    = $comparison['class'] . '::' . $comparison['generate'];
     for ($i = 0; $i < $averageOver; ++$i) {
-        PHP_Timer::start();
+        Timer::start();
         for ($cnt = 1; $cnt <= $iterations; ++$cnt) {
             call_user_func($call);
         }
 
-        $avgTime += PHP_Timer::stop();
+        $avgTime += Timer::stop();
     }
 
     $averages[$name] = $avgTime / $averageOver;
@@ -110,4 +111,4 @@ foreach ($averages as $name => $time) {
 
 $table->setHeaders($headers)->render();
 $output->writeln('');
-$output->writeln(PHP_Timer::resourceUsage());
+$output->writeln(Timer::resourceUsage());

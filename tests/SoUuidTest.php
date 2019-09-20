@@ -2,7 +2,7 @@
 
 /*
  * This file is part of SoUuid.
- *     (c) Fabrice de Stefanis / https://github.com/fab2s/NodalFlow
+ *     (c) Fabrice de Stefanis / https://github.com/fab2s/SoUuid
  * This source file is licensed under the MIT license which you will
  * find in the LICENSE file or at https://opensource.org/licenses/MIT
  */
@@ -28,6 +28,9 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
         'a27b28',
     ];
 
+    /**
+     * @throws \Exception
+     */
     public function testGenerate()
     {
         $input    = [];
@@ -95,6 +98,8 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @throws \Exception
+     *
      * @return array
      */
     public function uuidProvider()
@@ -119,9 +124,9 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
      *
      * @param SoUuidInterface $uuid
      * @param array           $decoded
-     * @param string|null     $identifier
+     * @param string|int|null $identifier (scalar would be a more accurate type)
      */
-    public function testDecode(SoUuidInterface $uuid, $decoded, $identifier)
+    public function testDecode(SoUuidInterface $uuid, array $decoded, $identifier)
     {
         $this->assertSame((string) $identifier, $uuid->getIdentifier());
         $this->assertSame($decoded['dateTime'], (int) substr($uuid->getMicroTime(), 0, -6));
@@ -133,7 +138,7 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
      * @param SoUuidInterface $uuid
      * @param array           $decoded
      */
-    public function testFromBytes(SoUuidInterface $uuid, $decoded)
+    public function testFromBytes(SoUuidInterface $uuid, array $decoded)
     {
         $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getHex(), $uuid->getHex());
@@ -154,7 +159,7 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
      * @param SoUuidInterface $uuid
      * @param array           $decoded
      */
-    public function testFromString(SoUuidInterface $uuid, $decoded)
+    public function testFromString(SoUuidInterface $uuid, array $decoded)
     {
         $this->assertSame(SoUuid::fromString($uuid->getString())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromString($uuid->getString())->getHex(), $uuid->getHex());
@@ -175,7 +180,7 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
      * @param SoUuidInterface $uuid
      * @param array           $decoded
      */
-    public function testFromHex(SoUuidInterface $uuid, $decoded)
+    public function testFromHex(SoUuidInterface $uuid, array $decoded)
     {
         $this->assertSame(SoUuid::fromHex($uuid->getHex())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromHex($uuid->getHex())->getHex(), $uuid->getHex());
@@ -196,7 +201,7 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
      * @param SoUuidInterface $uuid
      * @param array           $decoded
      */
-    public function testFromBase62(SoUuidInterface $uuid, $decoded)
+    public function testFromBase62(SoUuidInterface $uuid, array $decoded)
     {
         $this->assertSame(SoUuid::fromBase62($uuid->getBase62())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromBase62($uuid->getBase62())->getHex(), $uuid->getHex());
@@ -217,7 +222,7 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
      * @param SoUuidInterface $uuid
      * @param array           $decoded
      */
-    public function testFromBase36(SoUuidInterface $uuid, $decoded)
+    public function testFromBase36(SoUuidInterface $uuid, array $decoded)
     {
         $this->assertSame(SoUuid::fromBase36($uuid->getBase36())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromBase36($uuid->getBase36())->getHex(), $uuid->getHex());

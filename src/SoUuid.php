@@ -2,7 +2,7 @@
 
 /*
  * This file is part of SoUuid.
- *     (c) Fabrice de Stefanis / https://github.com/fab2s/NodalFlow
+ *     (c) Fabrice de Stefanis / https://github.com/fab2s/SoUuid
  * This source file is licensed under the MIT license which you will
  * find in the LICENSE file or at https://opensource.org/licenses/MIT
  */
@@ -69,19 +69,19 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
      *
      * @param string $uuid
      */
-    protected function __construct($uuid)
+    protected function __construct(string $uuid)
     {
         $this->uuid = (string) $uuid;
     }
 
     /**
-     * @param string|null $identifier
+     * @param string|int|null $identifier
      *
      * @throws \Exception
      *
      * @return SoUuidInterface
      */
-    public static function generate($identifier = null)
+    public static function generate($identifier = null): SoUuidInterface
     {
         // 7 bit micro-time
         $uuid = static::microTimeBin();
@@ -100,7 +100,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
      *
      * @return SoUuidInterface
      */
-    public static function fromString($uuidString)
+    public static function fromString(string $uuidString): SoUuidInterface
     {
         if (!preg_match(static::UUID_REGEX, $uuidString)) {
             throw new \InvalidArgumentException('Uuid String is not valid');
@@ -116,7 +116,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
      *
      * @return SoUuidInterface
      */
-    public static function fromHex($uuidString)
+    public static function fromHex(string $uuidString): SoUuidInterface
     {
         if (!preg_match('`^[0-9a-f]{32}$`i', $uuidString)) {
             throw new \InvalidArgumentException('Uuid Hex String is not valid');
@@ -132,7 +132,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
      *
      * @return SoUuidInterface
      */
-    public static function fromBytes($uuidString)
+    public static function fromBytes(string $uuidString): SoUuidInterface
     {
         if (strlen($uuidString) !== 16) {
             throw new \InvalidArgumentException('Uuid Binary String must be of length 16');
@@ -148,7 +148,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
      *
      * @return SoUuidInterface
      */
-    public static function fromBase62($uuidString)
+    public static function fromBase62(string $uuidString): SoUuidInterface
     {
         if (!ctype_alnum($uuidString)) {
             throw new \InvalidArgumentException('Uuid Base62 String must composed of a-zA-z0-9 exclusively');
@@ -166,7 +166,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
      *
      * @return SoUuidInterface
      */
-    public static function fromBase36($uuidString)
+    public static function fromBase36(string $uuidString): SoUuidInterface
     {
         if (!ctype_alnum($uuidString)) {
             throw new \InvalidArgumentException('Uuid Base36 String must composed of a-z0-9 exclusively');
@@ -182,7 +182,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
      *
      * @return array
      */
-    public function decode()
+    public function decode(): array
     {
         if ($this->decoded === null) {
             $idLen         = strlen($this->getIdentifier());
@@ -200,7 +200,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     /**
      * @return string
      */
-    public function getBytes()
+    public function getBytes(): string
     {
         return $this->uuid;
     }
@@ -208,7 +208,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     /**
      * @return string
      */
-    public function getHex()
+    public function getHex(): string
     {
         return bin2hex($this->uuid);
     }
@@ -216,7 +216,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     /**
      * @return string
      */
-    public function getIdentifier()
+    public function getIdentifier(): string
     {
         if ($this->identifier === null) {
             $this->identifier  = substr($this->uuid, 7, 6);
@@ -238,7 +238,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
      *
      * @return string
      */
-    public function getString()
+    public function getString(): string
     {
         if ($this->string === null) {
             // microsecond epoch - 2/6 id bytes - 4/6 id bytes - 6/6 id bytes - 3 random bytes
@@ -256,7 +256,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     /**
      * @return string
      */
-    public function getMicroTime()
+    public function getMicroTime(): string
     {
         if ($this->microTime === null) {
             $timeBin         = substr($this->uuid, 0, 7);
@@ -271,7 +271,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
      *
      * @return \DateTimeImmutable
      */
-    public function getDateTime()
+    public function getDateTime(): \DateTimeImmutable
     {
         if ($this->dateTime === null) {
             $this->dateTime = new \DateTimeImmutable('@' . substr($this->getMicroTime(), 0, -6));
@@ -283,7 +283,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     /**
      * @return string
      */
-    public function getBase62()
+    public function getBase62(): string
     {
         if ($this->base62 === null) {
             // max SoUuid = max microtime . max rem bits = 2^56 . 2^72 = 72057594037927936 . 4722366482869645213696
@@ -297,7 +297,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     /**
      * @return string
      */
-    public function getBase36()
+    public function getBase36(): string
     {
         if ($this->base36 === null) {
             // max SoUuid = 720575940379279364722366482869645213696 = w3dfhtoz4u26q89wgfzwnz94w in base 36 (25 chars)
@@ -310,7 +310,7 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     /**
      * @return string
      */
-    public static function microTimeBin()
+    public static function microTimeBin(): string
     {
         // get real microsecond precision, as both microtime(1) and array_sum(explode(' ', microtime()))
         // are limited by php.ini precision
@@ -323,14 +323,14 @@ class SoUuid implements SoUuidInterface, SoUuidFactoryInterface
     }
 
     /**
-     * @param string|null $identifier
+     * @param string|int|null $identifier
      *
      * @throws \Exception
      * @throws \InvalidArgumentException
      *
      * @return string
      */
-    public static function encodeIdentifier($identifier = null)
+    public static function encodeIdentifier($identifier = null): string
     {
         if ($identifier !== null) {
             if (strpos($identifier, static::IDENTIFIER_SEPARATOR) !== false) {

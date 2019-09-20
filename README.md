@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/fab2s/NodalFlow.svg?branch=master)](https://travis-ci.org/fab2s/NodalFlow) [![Total Downloads](https://poser.pugx.org/fab2s/souuid/downloads)](https://packagist.org/packages/fab2s/souuid) [![Monthly Downloads](https://poser.pugx.org/fab2s/souuid/d/monthly)](https://packagist.org/packages/fab2s/souuid) [![Latest Stable Version](https://poser.pugx.org/fab2s/souuid/v/stable)](https://packagist.org/packages/fab2s/souuid) [![SensioLabsInsight](https://insight.sensiolabs.com/projects/13777047-cf7c-4ac6-93ae-2965d0271e30/mini.png)](https://insight.sensiolabs.com/projects/13777047-cf7c-4ac6-93ae-2965d0271e30) [![Maintainability](https://api.codeclimate.com/v1/badges/14b58f95d46d0d2d47a7/maintainability)](https://codeclimate.com/github/fab2s/SoUuid/maintainability) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d5e82b8a57f64ca1beb6bf20bcc714e6)](https://www.codacy.com/app/fab2s/SoUuid?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=fab2s/SoUuid&amp;utm_campaign=Badge_Grade) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fab2s/SoUuid/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fab2s/SoUuid/?branch=master) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com) [![PHPPackages Referenced By](http://phppackages.org/p/fab2s/souuid/badge/referenced-by.svg)](http://phppackages.org/p/fab2s/souuid) [![License](https://poser.pugx.org/fab2s/nodalflow/license)](https://packagist.org/packages/fab2s/souuid)
 
-SoUuid is a working proposal to generate ordered UUIDs in a simple and efficient way using PHP. 
+`SoUuid` is a working proposal to generate ordered UUIDs in a simple and efficient way using PHP. 
 
 While UUIDs already have [well defined standards](https://tools.ietf.org/html/rfc4122), they suffer from quite bad performance when used as a primary key in DBMS. The reason are well know and goes down to :  
 - UUID are 36 characters long, which can grow the index size significantly, especially with InnoDB and alike where every secondary index would also contain the primary key.
@@ -20,11 +20,25 @@ So all together it felt like there was a room for some simple improvements that 
 
 ## Installation
 
-SoUuid can be installed using composer :
+`SoUuid` can be installed using composer:
 
 ```
 composer require "fab2s/souuid"
 ```
+
+If you want to specifically install the php >=7.1.0 version, use:
+
+```
+composer require "fab2s/souuid" ^1
+```
+
+If you want to specifically install the php 5.6/7.0 version, use:
+
+```
+composer require "fab2s/souuid" ^0
+```
+
+There are no changes other than further typing from 0.x to 1.x
 
 ## In practice 
 
@@ -97,14 +111,14 @@ array:4 [
 
 ### Base62
 
-SoUuid supports a `base62` format based on [gmp](http://php.net/gmp) which can be a handy form to expose to HTTP interfaces and URLs:
+`SoUuid` supports a `base62` format based on [gmp](http://php.net/gmp) which can be a handy form to expose to HTTP interfaces and URLs:
 
 ```php
 SoUuid::generate()->getBase62(); // ABRxdU5wbCLM7E7QhHS6r
 $uuid = SoUuid::fromBase62('ABRxdU5wbCLM7E7QhHS6r');
 ```
 
-Base62 SoUuids are variable length to a maximum of 22 chars within SoUuid valid time frame. They are fully ordered to the micro second if you left pad them with **0** up to the max length.
+Base62 `SoUuids` are variable length to a maximum of 22 chars within SoUuid valid time frame. They are fully ordered to the micro second if you left pad them with **0** up to the max length.
 
 ```php
 $orderedBase62Uuid =  str_pad(SoUuid::generate()->getBase62(), 22, '0', STR_PAD_LEFT);
@@ -112,13 +126,13 @@ $orderedBase62Uuid =  str_pad(SoUuid::generate()->getBase62(), 22, '0', STR_PAD_
 
 If you start generating now, base62 UUIDs will have a length of 21 chars until the 2398-12-22 05:49:06 (base 62 zzzzzzzzz = 13 537 086 546 263 551 µsec or 13 537 086 546 epoch time). This should leave enough time to think about left padding old UUIDs in case preserving a consistent ordering still matters at that point.
 
-This makes base62 format the second most efficient format for PK after the raw binary form. At the cost of 5 (or 6 if you have plans for year 2400) more characters, you get a more friendly format, ready to be used basically anywhere with no further transformation (url compatible etc) _except_ where case is insensitive. For DBMS, it's easy to make sure the PK field is case sensitive (binary or ascii_bin), but you cannot use these in filename on windows systems as the file system is case insensitive and that would open a gate to collisions.
+This makes `base62` format the second most efficient format for PK after the raw binary form. At the cost of 5 (or 6 if you have plans for year 2400) more characters, you get a more friendly format, ready to be used basically anywhere with no further transformation (url compatible etc) _except_ where case is insensitive. For DBMS, it's easy to make sure the PK field is case sensitive (binary or ascii_bin), but you cannot use these in filename on windows systems as the file system is case insensitive and that would open a gate to collisions.
 
-In such case, base36 format may be a better option.
+In such case, `base36` format may be a better option.
 
 ### Base36
 
-Following the same spirit, SoUuid provides with a `base36` alternative to `base62`, again based on [gmp](http://php.net/gmp). 
+Following the same spirit, `SoUuid` provides with a `base36` alternative to `base62`, again based on [gmp](http://php.net/gmp). 
 
 ```php
 SoUuid::generate()->getBase36(); // bix20qgjqmi9hqxh0y9tao5u
@@ -131,13 +145,13 @@ At the cost of an increased max length of 25 characters, the format becomes case
 $orderedBase36Uuid =  str_pad(SoUuid::generate()->getBase36(), 25, '0', STR_PAD_LEFT);
 ```
 
-If you start generating now, base62 UUIDs will have a length of 24 chars until the 2085-11-09 15:34:00 (base 36 zzzzzzzzzz = 3 656 158 440 062 975 µsec or 3 656 158 440 epoch time). This still leaves some time to think about left padding old UUIDs in case preserving a consistent ordering still matters at that point.
+If you start generating now, `base36` UUIDs will have a length of 24 chars until the 2085-11-09 15:34:00 (base 36 zzzzzzzzzz = 3 656 158 440 062 975 µsec or 3 656 158 440 epoch time). This still leaves some time to think about left padding old UUIDs in case preserving a consistent ordering still matters at that point.
 
 All together, this makes base36 format the third in efficiency as PK. You get a friendly ordered format, as portable as the regular UUID formats (case insensitive) at the cost of three more bytes compared to base62 while still preserving 11 bytes compared to the RFC formats.
 
 ## Behind the scene
 
-SoUuid aims at being a simple and efficient with a high level of protection against collisions.
+`SoUuid` aims at being a simple and efficient with a high level of protection against collisions.
 
 The recipe is pretty basic and is mostly inspired by the original RFC:
 - The current time to the micro second is stored in 56-bit binary format (7 bytes). 7 bytes is one byte bellow the RFC for the 100ns Gregorian time, but it is enough to encode microsecond timestamps until **4253-05-31 22:20:37** (or 2^56 microsecond after unix epoch - 1 µs).
@@ -155,7 +169,7 @@ So altogether this means that we are left with one chance out of 2^24 (= 16 777 
 Without any identifier, you add 5 random bytes and reach a total of 8 random bytes (2^64 combinations) to prevent collision within the same micro second, and this matches the best PHP RFC implementations.
 Of course, using meaningful and efficient identifiers such as a worker ids can reduce the chances to collide down to none. Just like with other RFC implementations, you still have to manually set the identifier, which otherwise defaults to a random string.
 
-SoUuid has no opinion about the identifier to use, these 6 bytes can be 6 alphanumerical chars like `w99j42` or a big integer converted to base 16 binary. For example 4 bytes can encode a decimal integer up to 2^32 - 1 or 4 294 967 295 which is already pretty big for the purpose of limiting collisions within one microsecond. With the full 6 bytes, you get 2^48 or 281 474 976 710 656, but I mean, how many UUID generators/worker do you actually use at once ?
+`SoUuid` has no opinion about the identifier to use, these 6 bytes can be 6 alphanumerical chars like `w99j42` or a big integer converted to base 16 binary. For example 4 bytes can encode a decimal integer up to 2^32 - 1 or 4 294 967 295 which is already pretty big for the purpose of limiting collisions within one microsecond. With the full 6 bytes, you get 2^48 or 281 474 976 710 656, but I mean, how many UUID generators/worker do you actually use at once ?
 
 ```php
 hex2bin(base_convert("4294967295", 10, 16)); // b"ÿÿÿÿ"
@@ -163,12 +177,12 @@ hex2bin(base_convert("4294967295", 10, 16)); // b"ÿÿÿÿ"
 
 You can even use some of these bytes to add a touch of [nonce](https://en.wikipedia.org/wiki/Cryptographic_nonce). Could just be round robin'd over a decent max int and shared among workers on the same host with [apcu](http://php.net/apcu), or even by specifying loop ranges for each server to use for their workers and so on.
 
-There is plenty of room to implement something that does the job in many particular cases. The identifier details are owned by their generator while still being part of a standard than can be shared and used by every SoUuid generator. It could even make sense to port the recipe to other languages if at least part of your UUIDs are PHP generated. You would just trade a slightly smaller time window for easier identifier control which ultimately is the best guarantee against collisions.
+There is plenty of room to implement something that does the job in many particular cases. The identifier details are owned by their generator while still being part of a standard than can be shared and used by every `SoUuid` generator. It could even make sense to port the recipe to other languages if at least part of your UUIDs are PHP generated. You would just trade a slightly smaller time window for easier identifier control which ultimately is the best guarantee against collisions.
 
 ## Why waist one entire null byte ?
 
 Well, as you may have noticed, a null byte (`\0`) is used to distinguish random identifier from user defined identifier. It's pretty clear that some _headache_ could be invested into using fewer space for that purpose. 
-But, at the very least and with no identifier, SoUuid still uses 8 bytes of entropy to protect each microseconds, and this _at least_ matches the best _theoretical_ level obtained with existing PHP implementations of the RFC.
+But, at the very least and with no identifier, `SoUuid` still uses 8 bytes of entropy to protect each microseconds, and this _at least_ matches the best _theoretical_ level obtained with existing PHP implementations of the RFC.
 
 I say _theoretical_ because this implies that these implementations actually gather microseconds, which does not seems so obvious when you look at the details.
 
@@ -194,7 +208,7 @@ microtime(0); // "0.80684200 1517992591"
 
 So this means that in practice you may find yourself with lower precisions when you use code based on `microtime(1)` to generate UUIDs. With an actual default of a 1000x wider time window to be protected against collisions compared to the RFC.
 
-SoUuid uses a string based approach that actually maintain the microsecond precision:
+`SoUuid` uses a string based approach that actually maintain the microsecond precision:
 
 ```php
 $timeParts = explode(' ', microtime(false));
@@ -219,7 +233,7 @@ As [random_compat](https://github.com/paragonie/random_compat) is included as po
 Since the [issue](https://github.com/fab2s/SoUuid/issues/1) was raised, I included a simple benchmark script to compare UUID generation time with [Webpaster/Uuid](https://github.com/webpatser/laravel-uuid) and [Ramsey/Uuid](https://github.com/ramsey/uuid). 
 Note that these libs are both good at doing their job and can be trusted in production environment. Besides, UUID generation time never was the actual performance issue since we are here talking about fractions of a second per 100K UUIDs where the scattered insert could end up costing hours in practice. It's also rather normal to find out that compared implementations, which handles 4 UUID versions and tend to go as deep in RFC as possible, are a bit slower. The main point stays the same : the slow part is not the implementation, it's the RFC's lack of order and the way it is used (string vs binary form and ordering, [benchmarks here](https://www.percona.com/blog/2014/12/19/store-uuid-optimized-way/)).
 
-In addition, the comparison is not entirely honest since all implementations do not do exactly the same thing to end up with a comparable UUID string. For example `Webpatser/Uuid` does pre-compute the string representation right after binary generation, and SoUuid does not. With SoUuid, Hex and String forms are lazy generated. But this does not slow down actual "insert after generate" either, because the binary form is the root from which other forms are derived, and it is the one to use for best performances as PK.
+In addition, the comparison is not entirely honest since all implementations do not do exactly the same thing to end up with a comparable UUID string. For example `Webpatser/Uuid` does pre-compute the string representation right after binary generation, and `SoUuid` does not. With `SoUuid`, Hex and String forms are lazy generated. But this does not slow down actual "insert after generate" either, because the binary form is the root from which other forms are derived, and it is the one to use for best performances as PK.
 
 Anyway, if you still bother:
 
@@ -272,11 +286,11 @@ Windows NT xxxxx 10.0 build 16299 (Windows 10) AMD64
 Time: 23.92 seconds, Memory: 4.00MB
 ```
 
-It seems like the only interesting fact we can learn from this is that PHP 7.2.0 is faster than PHP 7.1.2 at the cost of more memory usage (7.0.x is very close to 7.1.x for that matter).
+It seems like the only interesting fact we can learn from this is that PHP 7.2.0 is faster than PHP 7.1.2 at the cost of more memory usage.
 
 ## Requirements
 
-SoUuid is tested against php 5.6, 7.0, 7.1, 7.2 and 7.3.
+`SoUuid` is tested against php 7.1, 7.2 and 7.3.
 
 ## Contributing
 
@@ -284,4 +298,4 @@ Contributions are welcome, do not hesitate to open issues and submit pull reques
 
 ## License
 
-SoUuid is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
+`SoUuid` is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
