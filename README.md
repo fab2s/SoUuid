@@ -290,7 +290,7 @@ It seems like the only interesting fact we can learn from this is that PHP 7.2.0
 
 ## Requirements
 
-`SoUuid` is tested against php 7.1, 7.2 and 7.3.
+`SoUuid` is tested against php 7.1, 7.2, 7.3 and 7.4
 
 ## Contributing
 
