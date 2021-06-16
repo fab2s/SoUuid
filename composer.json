@@ -16,13 +16,13 @@
         "MIT"
     ],
     "require" : {
-        "php": ">=7.1.0"
+        "php": "^7.1|^8.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~8.0|~7.0",
         "symfony/console": ">=3.4",
-        "webpatser/laravel-uuid": "^3.0",
-        "ramsey/uuid": "^3.7",
+        "webpatser/laravel-uuid": "^3.0|^4.0",
+        "ramsey/uuid": "^3.7|^4.0",
         "phpunit/php-timer": "^2.1"
     },
     "suggest": {
