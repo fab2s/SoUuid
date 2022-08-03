@@ -1,6 +1,6 @@
 # SoUuid : Simple Ordered UUID 
 
-[![Build Status](https://travis-ci.com/fab2s/SoUuid.svg?branch=master)](https://travis-ci.com/fab2s/SoUuid) [![Total Downloads](https://poser.pugx.org/fab2s/souuid/downloads)](https://packagist.org/packages/fab2s/souuid) [![Monthly Downloads](https://poser.pugx.org/fab2s/souuid/d/monthly)](https://packagist.org/packages/fab2s/souuid) [![Latest Stable Version](https://poser.pugx.org/fab2s/souuid/v/stable)](https://packagist.org/packages/fab2s/souuid) [![SensioLabsInsight](https://insight.sensiolabs.com/projects/13777047-cf7c-4ac6-93ae-2965d0271e30/mini.png)](https://insight.sensiolabs.com/projects/13777047-cf7c-4ac6-93ae-2965d0271e30) [![Maintainability](https://api.codeclimate.com/v1/badges/14b58f95d46d0d2d47a7/maintainability)](https://codeclimate.com/github/fab2s/SoUuid/maintainability) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d5e82b8a57f64ca1beb6bf20bcc714e6)](https://www.codacy.com/app/fab2s/SoUuid?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=fab2s/SoUuid&amp;utm_campaign=Badge_Grade) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fab2s/SoUuid/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fab2s/SoUuid/?branch=master) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com) [![PHPPackages Referenced By](http://phppackages.org/p/fab2s/souuid/badge/referenced-by.svg)](http://phppackages.org/p/fab2s/souuid) [![License](https://poser.pugx.org/fab2s/nodalflow/license)](https://packagist.org/packages/fab2s/souuid)
+[![Build Status](https://travis-ci.com/fab2s/SoUuid.svg?branch=master)](https://travis-ci.com/fab2s/SoUuid) [![Total Downloads](https://poser.pugx.org/fab2s/souuid/downloads)](https://packagist.org/packages/fab2s/souuid) [![Monthly Downloads](https://poser.pugx.org/fab2s/souuid/d/monthly)](https://packagist.org/packages/fab2s/souuid) [![Latest Stable Version](https://poser.pugx.org/fab2s/souuid/v/stable)](https://packagist.org/packages/fab2s/souuid)  [![Maintainability](https://api.codeclimate.com/v1/badges/14b58f95d46d0d2d47a7/maintainability)](https://codeclimate.com/github/fab2s/SoUuid/maintainability) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fab2s/SoUuid/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fab2s/SoUuid/?branch=master) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com) [![License](https://poser.pugx.org/fab2s/nodalflow/license)](https://packagist.org/packages/fab2s/souuid)
 
 `SoUuid` is a working proposal to generate ordered UUIDs in a simple and efficient way using PHP. 
 
@@ -124,7 +124,7 @@ Base62 `SoUuids` are variable length to a maximum of 22 chars within SoUuid vali
 $orderedBase62Uuid =  str_pad(SoUuid::generate()->getBase62(), 22, '0', STR_PAD_LEFT);
 ```
 
-If you start generating now, base62 UUIDs will have a length of 21 chars until the 2398-12-22 05:49:06 (base 62 zzzzzzzzz = 13 537 086 546 263 551 µsec or 13 537 086 546 epoch time). This should leave enough time to think about left padding old UUIDs in case preserving a consistent ordering still matters at that point.
+If you start generating now, base62 UUIDs will have a length of 21 chars until the 2398-12-22 05:49:06 UTC (base 62 zzzzzzzzz = 13 537 086 546 263 551 µsec or 13 537 086 546 epoch time). This should leave enough time to think about left padding old UUIDs in case preserving a consistent ordering still matters at that point.
 
 This makes `base62` format the second most efficient format for PK after the raw binary form. At the cost of 5 (or 6 if you have plans for year 2400) more characters, you get a more friendly format, ready to be used basically anywhere with no further transformation (url compatible etc) _except_ where case is insensitive. For DBMS, it's easy to make sure the PK field is case sensitive (binary or ascii_bin), but you cannot use these in filename on windows systems as the file system is case insensitive and that would open a gate to collisions.
 
@@ -145,16 +145,57 @@ At the cost of an increased max length of 25 characters, the format becomes case
 $orderedBase36Uuid =  str_pad(SoUuid::generate()->getBase36(), 25, '0', STR_PAD_LEFT);
 ```
 
-If you start generating now, `base36` UUIDs will have a length of 24 chars until the 2085-11-09 15:34:00 (base 36 zzzzzzzzzz = 3 656 158 440 062 975 µsec or 3 656 158 440 epoch time). This still leaves some time to think about left padding old UUIDs in case preserving a consistent ordering still matters at that point.
+If you start generating now, `base36` UUIDs will have a length of 24 chars until the 2085-11-09 15:34:00 UTC (base 36 zzzzzzzzzz = 3 656 158 440 062 975 µsec or 3 656 158 440 epoch time). This still leaves some time to think about left padding old UUIDs in case preserving a consistent ordering still matters at that point.
 
 All together, this makes base36 format the third in efficiency as PK. You get a friendly ordered format, as portable as the regular UUID formats (case insensitive) at the cost of three more bytes compared to base62 while still preserving 11 bytes compared to the RFC formats.
+
+## Laravel (the awesome)
+
+You can `use` `SoUuidTrait` directly in your models to start using SoUuid's as primary keys in your models.
+
+By default, it will use the raw binary form, also being the most effective, but you can also use any other form by overriding the `generateSoUuid` method in your model (or in an abstract or trait using this trait) :
+
+```php
+    /**
+     * @throws \Exception
+     *
+     * @return string
+     */
+    public static function generateSoUuid(): string
+    {
+        // base62 example, could be any of the available forms
+        return SoUuid::generate(static::generateSoUuidIdentifier())->getBase62();
+    }
+```
+
+> Note that you can manually any identifier that may be more suitable for you than the default one provided by `generateSoUuidIdentifier` which will be derived from the `ModelName` using each of the capitalized letters (up to 6, eg `mn` from `ModelName`).
+
+### Migrations 
+
+In any form, the best type for the database field carrying the SoUuid should be ascii case insensitive and match the target length of the chosen type :
+
+```php 
+// Raw binary form
+$table->char('id', 16)->charset('ascii')->collation('ascii_bin')->primary();
+
+// base62 unpaded, valid until 2398-12-22 05:49:06 UTC
+$table->char('id', 21)->charset('ascii')->collation('ascii_bin')->primary();
+
+// base36 unpaded, valid until 2085-11-09 15:34:00 UTC
+$table->char('id', 24)->charset('ascii')->collation('ascii_bin')->primary();
+
+// string form, valid until 4253-05-31 22:20:37 UTC
+$table->char('id', 36)->charset('ascii')->collation('ascii_bin')->primary();
+```
+
+All of which being fully ordered to the microsecond.
 
 ## Behind the scene
 
 `SoUuid` aims at being a simple and efficient with a high level of protection against collisions.
 
 The recipe is pretty basic and is mostly inspired by the original RFC:
-- The current time to the micro second is stored in 56-bit binary format (7 bytes). 7 bytes is one byte bellow the RFC for the 100ns Gregorian time, but it is enough to encode microsecond timestamps until **4253-05-31 22:20:37** (or 2^56 microsecond after unix epoch - 1 µs).
+- The current time to the micro second is stored in 56-bit binary format (7 bytes). 7 bytes is one byte bellow the RFC for the 100ns Gregorian time, but it is enough to encode microsecond timestamps until **4253-05-31 22:20:37 UTC** (or 2^56 microsecond after unix epoch - 1 µs).
 - Following the RFC spirit, 6 bytes are then reserved for an identifier, similar to the RFC `node` parameter, except this identifier can be any 6 or bellow bytes, not necessarily an hex Mac address'ish string.
 - Again like the RFC, some random bytes are finally added, but since we saved one from the time part, both by limiting validity span for the next 2 millenniums and reducing the precision to micro seconds, one more random byte can be picked.
 
@@ -290,7 +331,7 @@ It seems like the only interesting fact we can learn from this is that PHP 7.2.0
 
 ## Requirements
 
-`SoUuid` is tested against php 7.1, 7.2, 7.3 and 7.4
+`SoUuid` is tested against php 7.1, 7.2, 7.3, 7.4, 8.0 and 8.1
 
 ## Contributing
 
