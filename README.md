@@ -1,6 +1,6 @@
 # SoUuid : Simple Ordered UUID 
 
-[![Build Status](https://travis-ci.com/fab2s/SoUuid.svg?branch=master)](https://travis-ci.com/fab2s/SoUuid) [![Total Downloads](https://poser.pugx.org/fab2s/souuid/downloads)](https://packagist.org/packages/fab2s/souuid) [![Monthly Downloads](https://poser.pugx.org/fab2s/souuid/d/monthly)](https://packagist.org/packages/fab2s/souuid) [![Latest Stable Version](https://poser.pugx.org/fab2s/souuid/v/stable)](https://packagist.org/packages/fab2s/souuid)  [![Maintainability](https://api.codeclimate.com/v1/badges/14b58f95d46d0d2d47a7/maintainability)](https://codeclimate.com/github/fab2s/SoUuid/maintainability) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fab2s/SoUuid/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fab2s/SoUuid/?branch=master) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com) [![License](https://poser.pugx.org/fab2s/nodalflow/license)](https://packagist.org/packages/fab2s/souuid)
+![Build Status](https://github.com/fab2s/SoUuid/actions/workflows/ci.yml/badge.svg) [![Total Downloads](https://poser.pugx.org/fab2s/souuid/downloads)](https://packagist.org/packages/fab2s/souuid) [![Monthly Downloads](https://poser.pugx.org/fab2s/souuid/d/monthly)](https://packagist.org/packages/fab2s/souuid) [![Latest Stable Version](https://poser.pugx.org/fab2s/souuid/v/stable)](https://packagist.org/packages/fab2s/souuid)  [![Maintainability](https://api.codeclimate.com/v1/badges/14b58f95d46d0d2d47a7/maintainability)](https://codeclimate.com/github/fab2s/SoUuid/maintainability) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fab2s/SoUuid/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fab2s/SoUuid/?branch=master) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com) [![License](https://poser.pugx.org/fab2s/nodalflow/license)](https://packagist.org/packages/fab2s/souuid)
 
 `SoUuid` is a working proposal to generate ordered UUIDs in a simple and efficient way using PHP. 
 
@@ -153,7 +153,7 @@ All together, this makes base36 format the third in efficiency as PK. You get a 
 
 You can `use` `SoUuidTrait` directly in your models to start using SoUuid's as primary keys in your models.
 
-By default, it will use the raw binary form, also being the most effective, but you can also use any other form by overriding the `generateSoUuid` method in your model (or in an abstract or trait using this trait) :
+By default, it will use the classic string form, but you can also use any other form by overriding the `generateSoUuid` method in your model (or in an abstract or trait using this trait) :
 
 ```php
     /**
