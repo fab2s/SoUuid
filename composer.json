@@ -23,7 +23,8 @@
         "symfony/console": "^6.0|^5.0|^4.0|^3.4",
         "webpatser/laravel-uuid": "^3.0|^4.0",
         "ramsey/uuid": "^3.7|^4.0",
-        "phpunit/php-timer": "^4.0|^3.0|^2.1"
+        "phpunit/php-timer": "^5.0|^4.0|^3.0|^2.1",
+        "friendsofphp/php-cs-fixer": "^3.0|^2.0"
     },
     "suggest": {
         "ext-gmp": "To use base62 and base36 formats",
@@ -40,6 +41,7 @@
         ],
         "post-install-cmd": [
             "rm -f .*.cache"
-        ]
+        ],
+        "fix": "php-cs-fixer fix --config=./.php-cs-fixer.dist.php -vvv"
     }
 }
