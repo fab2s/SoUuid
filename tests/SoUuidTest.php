@@ -11,6 +11,7 @@ namespace fab2s\SoUuid\Tests;
 
 use fab2s\SoUuid\SoUuid;
 use fab2s\SoUuid\SoUuidInterface;
+use InvalidArgumentException;
 
 class SoUuidTest extends \PHPUnit\Framework\TestCase
 {
@@ -235,6 +236,42 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
         $reDecoded['dateTime'] = $reDecoded['dateTime']->getTimestamp();
 
         $this->assertSame($reDecoded, $decoded);
+    }
+
+    public function testFromBytesException()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        SoUuid::fromBytes(str_repeat('y', 14));
+    }
+
+    public function testFromHexException()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        SoUuid::fromHex(str_repeat('y', 14));
+    }
+
+    public function testFromStringException()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        SoUuid::fromString(str_repeat('y', 14));
+    }
+
+    public function testFromBase62Exception()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        SoUuid::fromBase62(str_repeat('€', 14));
+    }
+
+    public function testFromBase36Exception()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        SoUuid::fromBase36(str_repeat('€', 14));
+    }
+
+    public function testEncodeNullByteException()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        SoUuid::generate("\0");
     }
 
     /**
