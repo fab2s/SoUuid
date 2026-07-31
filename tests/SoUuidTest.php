@@ -12,13 +12,17 @@ namespace fab2s\SoUuid\Tests;
 use fab2s\SoUuid\SoUuid;
 use fab2s\SoUuid\SoUuidInterface;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 
-class SoUuidTest extends \PHPUnit\Framework\TestCase
+#[CoversClass(SoUuid::class)]
+class SoUuidTest extends TestCase
 {
     /**
      * @var array
      */
-    protected $identifiers = [
+    protected static $identifiers = [
         '',
         null,
         0,
@@ -55,7 +59,7 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
         $b36TimeSwitch    = time() > 3656158440;
         $base36Length     = $b36TimeSwitch ? 25 : 24;
         $base36TimeLength = $b36TimeSwitch ? 11 : 10;
-        foreach ($this->identifiers as $identifier) {
+        foreach (static::$identifiers as $identifier) {
             for ($i = 0; $i < 100; ++$i) {
                 $uuid       = SoUuid::generate($identifier);
                 $input[]    = substr($uuid->getBytes(), 0, 7) . $randTail;
@@ -100,46 +104,35 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @throws \Exception
-     *
-     * @return array
      */
-    public function uuidProvider()
+    public static function uuidProvider(): array
     {
         $data = [];
-        foreach ($this->identifiers as $identifier) {
+        foreach (static::$identifiers as $identifier) {
             $uuid                = SoUuid::generate($identifier);
             $decoded             = $uuid->decode();
             $decoded['dateTime'] = $decoded['dateTime']->getTimestamp();
-            $data[]              = [
-                'uuid'       => $uuid,
-                'decoded'    => $decoded,
-                'identifier' => $identifier,
+            // positional on purpose: string keys are passed as named arguments
+            // since phpunit 10, and not every test case declares $identifier
+            $data[] = [
+                $uuid,
+                $decoded,
+                $identifier,
             ];
         }
 
         return $data;
     }
 
-    /**
-     * @dataProvider uuidProvider
-     *
-     * @param SoUuidInterface $uuid
-     * @param array           $decoded
-     * @param string|int|null $identifier (scalar would be a more accurate type)
-     */
+    #[DataProvider('uuidProvider')]
     public function testDecode(SoUuidInterface $uuid, array $decoded, $identifier)
     {
         $this->assertSame((string) $identifier, $uuid->getIdentifier());
         $this->assertSame($decoded['dateTime'], (int) substr($uuid->getMicroTime(), 0, -6));
     }
 
-    /**
-     * @dataProvider uuidProvider
-     *
-     * @param SoUuidInterface $uuid
-     * @param array           $decoded
-     */
-    public function testFromBytes(SoUuidInterface $uuid, array $decoded)
+    #[DataProvider('uuidProvider')]
+    public function testFromBytes(SoUuidInterface $uuid, array $decoded, $identifier)
     {
         $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getHex(), $uuid->getHex());
@@ -154,13 +147,8 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($reDecoded, $decoded);
     }
 
-    /**
-     * @dataProvider uuidProvider
-     *
-     * @param SoUuidInterface $uuid
-     * @param array           $decoded
-     */
-    public function testFromString(SoUuidInterface $uuid, array $decoded)
+    #[DataProvider('uuidProvider')]
+    public function testFromString(SoUuidInterface $uuid, array $decoded, $identifier)
     {
         $this->assertSame(SoUuid::fromString($uuid->getString())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromString($uuid->getString())->getHex(), $uuid->getHex());
@@ -175,13 +163,8 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($reDecoded, $decoded);
     }
 
-    /**
-     * @dataProvider uuidProvider
-     *
-     * @param SoUuidInterface $uuid
-     * @param array           $decoded
-     */
-    public function testFromHex(SoUuidInterface $uuid, array $decoded)
+    #[DataProvider('uuidProvider')]
+    public function testFromHex(SoUuidInterface $uuid, array $decoded, $identifier)
     {
         $this->assertSame(SoUuid::fromHex($uuid->getHex())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromHex($uuid->getHex())->getHex(), $uuid->getHex());
@@ -196,13 +179,8 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($reDecoded, $decoded);
     }
 
-    /**
-     * @dataProvider uuidProvider
-     *
-     * @param SoUuidInterface $uuid
-     * @param array           $decoded
-     */
-    public function testFromBase62(SoUuidInterface $uuid, array $decoded)
+    #[DataProvider('uuidProvider')]
+    public function testFromBase62(SoUuidInterface $uuid, array $decoded, $identifier)
     {
         $this->assertSame(SoUuid::fromBase62($uuid->getBase62())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromBase62($uuid->getBase62())->getHex(), $uuid->getHex());
@@ -217,13 +195,8 @@ class SoUuidTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($reDecoded, $decoded);
     }
 
-    /**
-     * @dataProvider uuidProvider
-     *
-     * @param SoUuidInterface $uuid
-     * @param array           $decoded
-     */
-    public function testFromBase36(SoUuidInterface $uuid, array $decoded)
+    #[DataProvider('uuidProvider')]
+    public function testFromBase36(SoUuidInterface $uuid, array $decoded, $identifier)
     {
         $this->assertSame(SoUuid::fromBase36($uuid->getBase36())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromBase36($uuid->getBase36())->getHex(), $uuid->getHex());
