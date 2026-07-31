@@ -1,6 +1,6 @@
 # SoUuid : Simple Ordered UUID 
 
-![Build Status](https://github.com/fab2s/SoUuid/actions/workflows/ci.yml/badge.svg) [![QA](https://github.com/fab2s/SoUuid/actions/workflows/qa.yml/badge.svg)](https://github.com/fab2s/SoUuid/actions/workflows/qa.yml) [![Total Downloads](https://poser.pugx.org/fab2s/souuid/downloads)](https://packagist.org/packages/fab2s/souuid) [![Monthly Downloads](https://poser.pugx.org/fab2s/souuid/d/monthly)](https://packagist.org/packages/fab2s/souuid) [![Latest Stable Version](https://poser.pugx.org/fab2s/souuid/v/stable)](https://packagist.org/packages/fab2s/souuid)  [![Maintainability](https://api.codeclimate.com/v1/badges/14b58f95d46d0d2d47a7/maintainability)](https://codeclimate.com/github/fab2s/SoUuid/maintainability) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fab2s/SoUuid/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fab2s/SoUuid/?branch=master) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com) [![License](https://poser.pugx.org/fab2s/nodalflow/license)](https://packagist.org/packages/fab2s/souuid)
+![Build Status](https://github.com/fab2s/SoUuid/actions/workflows/ci.yml/badge.svg) [![QA](https://github.com/fab2s/SoUuid/actions/workflows/qa.yml/badge.svg)](https://github.com/fab2s/SoUuid/actions/workflows/qa.yml) [![Total Downloads](https://poser.pugx.org/fab2s/souuid/downloads)](https://packagist.org/packages/fab2s/souuid) [![Monthly Downloads](https://poser.pugx.org/fab2s/souuid/d/monthly)](https://packagist.org/packages/fab2s/souuid) [![Latest Stable Version](https://poser.pugx.org/fab2s/souuid/v/stable)](https://packagist.org/packages/fab2s/souuid)  [![Maintainability](https://api.codeclimate.com/v1/badges/14b58f95d46d0d2d47a7/maintainability)](https://codeclimate.com/github/fab2s/SoUuid/maintainability) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com) [![License](https://poser.pugx.org/fab2s/nodalflow/license)](https://packagist.org/packages/fab2s/souuid)
 
 `SoUuid` is a working proposal to generate ordered UUIDs in a simple and efficient way using PHP. 
 
@@ -331,7 +331,7 @@ It seems like the only interesting fact we can learn from this is that PHP 7.2.0
 
 ## Requirements
 
-`SoUuid` is tested against php 7.1, 7.2, 7.3, 7.4, 8.0 and 8.1
+`SoUuid` is tested against php 8.2, 8.3, 8.4 and 8.5
 
 ## Contributing
 
