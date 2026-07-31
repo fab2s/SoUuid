@@ -9,53 +9,28 @@
 
 namespace fab2s\SoUuid;
 
+use DateTimeImmutable;
+
 /**
  * interface SoUuidInterface
  */
 interface SoUuidInterface
 {
-    /**
-     * @return array
-     */
     public function decode(): array;
 
-    /**
-     * @return string
-     */
     public function getBytes(): string;
 
-    /**
-     * @return string
-     */
     public function getHex(): string;
 
-    /**
-     * @return string
-     */
     public function getIdentifier(): string;
 
-    /**
-     * @return string
-     */
     public function getString(): string;
 
-    /**
-     * @return string
-     */
     public function getMicroTime(): string;
 
-    /**
-     * @return \DateTimeImmutable
-     */
-    public function getDateTime(): \DateTimeImmutable;
+    public function getDateTime(): DateTimeImmutable;
 
-    /**
-     * @return string
-     */
     public function getBase62(): string;
 
-    /**
-     * @return string
-     */
     public function getBase36(): string;
 }

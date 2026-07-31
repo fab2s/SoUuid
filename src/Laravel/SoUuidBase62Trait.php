@@ -9,6 +9,7 @@
 
 namespace fab2s\SoUuid\Laravel;
 
+use Exception;
 use fab2s\SoUuid\SoUuid;
 
 trait SoUuidBase62Trait
@@ -16,9 +17,7 @@ trait SoUuidBase62Trait
     use SoUuidTrait;
 
     /**
-     * @throws \Exception
-     *
-     * @return string
+     * @throws Exception
      */
     public static function generateSoUuid(): string
     {

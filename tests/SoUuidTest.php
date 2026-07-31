@@ -9,6 +9,8 @@
 
 namespace fab2s\SoUuid\Tests;
 
+use DateTimeImmutable;
+use Exception;
 use fab2s\SoUuid\SoUuid;
 use fab2s\SoUuid\SoUuidInterface;
 use InvalidArgumentException;
@@ -34,9 +36,9 @@ class SoUuidTest extends TestCase
     ];
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
-    public function testGenerate()
+    public function test_generate()
     {
         $input    = [];
         $inputHex = [];
@@ -60,7 +62,7 @@ class SoUuidTest extends TestCase
         $base36Length     = $b36TimeSwitch ? 25 : 24;
         $base36TimeLength = $b36TimeSwitch ? 11 : 10;
         foreach (static::$identifiers as $identifier) {
-            for ($i = 0; $i < 100; ++$i) {
+            for ($i = 0; $i < 100; $i++) {
                 $uuid       = SoUuid::generate($identifier);
                 $input[]    = substr($uuid->getBytes(), 0, 7) . $randTail;
                 $inputHex[] = substr($uuid->getHex(), 0, 14) . $randTailHex;
@@ -82,7 +84,7 @@ class SoUuidTest extends TestCase
 
             $this->assertSame(bin2hex($uuid->getBytes()), $uuid->getHex());
             $this->assertSame(bin2hex($uuid->getBytes()), str_replace('-', '', $uuid->getString()));
-            $this->assertSame(SoUuid::generate($identifier)->getDateTime()->format('Y-m-D H:i:s'), (new \DateTimeImmutable('@' . time()))->format('Y-m-D H:i:s'));
+            $this->assertSame(SoUuid::generate($identifier)->getDateTime()->format('Y-m-D H:i:s'), (new DateTimeImmutable('@' . time()))->format('Y-m-D H:i:s'));
         }
 
         $sorted = $input;
@@ -103,7 +105,7 @@ class SoUuidTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public static function uuidProvider(): array
     {
@@ -125,14 +127,14 @@ class SoUuidTest extends TestCase
     }
 
     #[DataProvider('uuidProvider')]
-    public function testDecode(SoUuidInterface $uuid, array $decoded, $identifier)
+    public function test_decode(SoUuidInterface $uuid, array $decoded, $identifier)
     {
         $this->assertSame((string) $identifier, $uuid->getIdentifier());
         $this->assertSame($decoded['dateTime'], (int) substr($uuid->getMicroTime(), 0, -6));
     }
 
     #[DataProvider('uuidProvider')]
-    public function testFromBytes(SoUuidInterface $uuid, array $decoded, $identifier)
+    public function test_from_bytes(SoUuidInterface $uuid, array $decoded, $identifier)
     {
         $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromBytes($uuid->getBytes())->getHex(), $uuid->getHex());
@@ -148,7 +150,7 @@ class SoUuidTest extends TestCase
     }
 
     #[DataProvider('uuidProvider')]
-    public function testFromString(SoUuidInterface $uuid, array $decoded, $identifier)
+    public function test_from_string(SoUuidInterface $uuid, array $decoded, $identifier)
     {
         $this->assertSame(SoUuid::fromString($uuid->getString())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromString($uuid->getString())->getHex(), $uuid->getHex());
@@ -164,7 +166,7 @@ class SoUuidTest extends TestCase
     }
 
     #[DataProvider('uuidProvider')]
-    public function testFromHex(SoUuidInterface $uuid, array $decoded, $identifier)
+    public function test_from_hex(SoUuidInterface $uuid, array $decoded, $identifier)
     {
         $this->assertSame(SoUuid::fromHex($uuid->getHex())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromHex($uuid->getHex())->getHex(), $uuid->getHex());
@@ -180,7 +182,7 @@ class SoUuidTest extends TestCase
     }
 
     #[DataProvider('uuidProvider')]
-    public function testFromBase62(SoUuidInterface $uuid, array $decoded, $identifier)
+    public function test_from_base62(SoUuidInterface $uuid, array $decoded, $identifier)
     {
         $this->assertSame(SoUuid::fromBase62($uuid->getBase62())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromBase62($uuid->getBase62())->getHex(), $uuid->getHex());
@@ -196,7 +198,7 @@ class SoUuidTest extends TestCase
     }
 
     #[DataProvider('uuidProvider')]
-    public function testFromBase36(SoUuidInterface $uuid, array $decoded, $identifier)
+    public function test_from_base36(SoUuidInterface $uuid, array $decoded, $identifier)
     {
         $this->assertSame(SoUuid::fromBase36($uuid->getBase36())->getBytes(), $uuid->getBytes());
         $this->assertSame(SoUuid::fromBase36($uuid->getBase36())->getHex(), $uuid->getHex());
@@ -211,49 +213,49 @@ class SoUuidTest extends TestCase
         $this->assertSame($reDecoded, $decoded);
     }
 
-    public function testFromBytesException()
+    public function test_from_bytes_exception()
     {
         $this->expectException(InvalidArgumentException::class);
         SoUuid::fromBytes(str_repeat('y', 14));
     }
 
-    public function testFromHexException()
+    public function test_from_hex_exception()
     {
         $this->expectException(InvalidArgumentException::class);
         SoUuid::fromHex(str_repeat('y', 14));
     }
 
-    public function testFromStringException()
+    public function test_from_string_exception()
     {
         $this->expectException(InvalidArgumentException::class);
         SoUuid::fromString(str_repeat('y', 14));
     }
 
-    public function testFromBase62Exception()
+    public function test_from_base62_exception()
     {
         $this->expectException(InvalidArgumentException::class);
         SoUuid::fromBase62(str_repeat('€', 14));
     }
 
-    public function testFromBase36Exception()
+    public function test_from_base36_exception()
     {
         $this->expectException(InvalidArgumentException::class);
         SoUuid::fromBase36(str_repeat('€', 14));
     }
 
-    public function testEncodeNullByteException()
+    public function test_encode_null_byte_exception()
     {
         $this->expectException(InvalidArgumentException::class);
         SoUuid::generate("\0");
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
-    public function testEncodeIdentifier()
+    public function test_encode_identifier()
     {
         $this->assertSame(6, strlen(SoUuid::encodeIdentifier()));
-        for ($i = 0; $i < 10; ++$i) {
+        for ($i = 0; $i < 10; $i++) {
             $this->assertSame(6, strlen(SoUuid::encodeIdentifier(str_repeat('#', $i))));
         }
     }
