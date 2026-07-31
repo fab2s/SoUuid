@@ -9,6 +9,7 @@
 
 namespace fab2s\SoUuid\Laravel;
 
+use Exception;
 use fab2s\SoUuid\SoUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -22,8 +23,6 @@ trait SoUuidTrait
 
     /**
      * Get the value indicating whether the IDs are incrementing.
-     *
-     * @return bool
      */
     public function getIncrementing(): bool
     {
@@ -32,8 +31,6 @@ trait SoUuidTrait
 
     /**
      * Get the auto-incrementing key type.
-     *
-     * @return string
      */
     public function getKeyType(): string
     {
@@ -41,9 +38,7 @@ trait SoUuidTrait
     }
 
     /**
-     * @throws \Exception
-     *
-     * @return string
+     * @throws Exception
      */
     public static function generateSoUuid(): string
     {
@@ -53,7 +48,7 @@ trait SoUuidTrait
     /**
      * Boot Laravel model
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected static function bootSoUuidTrait()
     {
@@ -66,9 +61,6 @@ trait SoUuidTrait
         });
     }
 
-    /**
-     * @return string
-     */
     protected static function generateSoUuidIdentifier(): string
     {
         if (isset(static::$soUuidIdentifiers[static::class])) {
